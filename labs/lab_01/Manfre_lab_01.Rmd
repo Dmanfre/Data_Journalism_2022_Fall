@@ -112,13 +112,17 @@ Store it as a variable object called `wv_summary` so that you can examine it wit
 
 ```{r}
 wv_summary <- wv_winred_contribs %>% 
-  group_by(state, amount) %>%
+  group_by(state) %>%
   summarise(
     count_contribs = n(),
     total_amount = sum(amount),
     mean_amount = mean(amount),
     median_amount = median(amount),
+    max = max(amount),
+    min = min(amount)
   ) %>%
   arrange(desc(total_amount))
 ```
 NOTE: When I am trying to make this table I feel like I am doing the right thing but I do not know how to get the largets and smallest contribution amounts in there....
+
+NOTE 2: I figured it out... I wasn't thinking about max and min.
