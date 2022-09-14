@@ -56,7 +56,7 @@ number * number
 
 What does it return? Type your answer below:
 
-**Answer:**
+**Answer:** 54,247 rows and 24 variables.
 
 ### Task 3: Install packages
 **Task** In the console, run the following code to install the Tidyverse:
@@ -134,7 +134,7 @@ Describe what you think this code is doing below.
 ### Task 7
 **Task** Run the following codeblock:
 ```{r}
-maryland_winred_contributions %>%
+ maryland_winred_contributions %>%
   group_by(date) %>%
   summarise(
     count_contribs = n()
@@ -170,6 +170,7 @@ maryland_winred_contributions %>%
   arrange(desc(total_amount))
 ```
 Compared to the previous codeblock, what has changed and how did that affect the result?
+
 **Answer** This table shows the total number of donations made by each organization and the total dollar amount it adds up to. The previous tables showed the quantity of donations made in each dollar amount.
 
 ### Task 10
@@ -181,7 +182,7 @@ maryland_winred_contributions %>%
     count_contribs = n(),
     total_amount = sum(amount),
     mean_amount = mean(amount),
-    median_amount = median(amount)
+    median_amount = median(amount),
   ) %>%
   arrange(desc(count_contribs))
 ```
