@@ -34,6 +34,10 @@ library(tidyverse)
 ```
 
 
+Here's the path to my external drive repo:
+
+/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall
+
 ### Summarizing
 
 I need to use group_by and summariz. Here's an example of grouping by county and calculating counts, sum and other descriptive statistics.
@@ -52,4 +56,29 @@ ppp_maryland_loans %>%
   ) %>%
   arrange(desc(max_loan_amount))
 ```
+
+### Interesting Packages
+
+Lubridate: this package helps you work with dates and times 
+
+### Verbs to know form 9/19
+read_csv tells R to read the CSV file which is your data set
+Mutate() adds a new column based on one ore more existing columns.
+  - This is not perminent until we save it as a new variable.
+  - `str_to_upper` that will convert a character column into all uppercase.
+  - str is string to ....
+Select() means I only want to see a certain amount of columns. Seperate them by commas. 
+case_when is a mutation that can show you a range say donations ranging from 100 to 400 ... 
+
+mutate(
+    amount_category = case_when(
+        amount < 100 ~ "Less than $100",
+        amount >= 100 & amount <= 500 ~ "Between $100 and $500",
+        amount > 500 & amount <= 2900 ~ "Between $501 and $2900",
+        amount > 2900 ~ "More than $2,900"
+    "Copy this code for when I need to do it next time"
+    
+Filter ==
+### Notes
+A general tip about using filter: it's easier to work your way towards the filter syntax you need rather than try and write it once and trust the result. Each time you modify your filter, check the results to see if they make sense. This adds a little time to your process but you'll thank yourself for doing it because it helps avoid mistakes.
 
