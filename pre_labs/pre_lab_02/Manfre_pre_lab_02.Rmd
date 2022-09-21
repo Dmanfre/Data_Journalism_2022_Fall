@@ -208,7 +208,8 @@ The data we want to filter on is in `jurisdiction`. So we're going to use filter
 **Task** Run the following code to limit our 2018 primary results data to Prince George's County.
 
 ```{r}
-prince_georges <- primary_18 %>% filter(jurisdiction == "Prince George's")
+prince_georges <- primary_18 %>% filter(jurisdiction == "Prince George's") %>% 
+select(office, district, name_raw, party, votes)
 
 head(prince_georges)
 ```

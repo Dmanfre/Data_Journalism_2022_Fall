@@ -82,3 +82,13 @@ Filter ==
 ### Notes
 A general tip about using filter: it's easier to work your way towards the filter syntax you need rather than try and write it once and trust the result. Each time you modify your filter, check the results to see if they make sense. This adds a little time to your process but you'll thank yourself for doing it because it helps avoid mistakes.
 
+### Notes from 9/21/22
+Select is a horoontal compression (number of columns) 
+  - select(office, district, name_raw, party, votes)
+  - Reduces the number of columns I see
+  - Use it when facing a situation wehre you want to look at 4 columns out of a ton.
+Filter is a vertal compression. (number of rows)
+
+AND and OR. In this case, AND is `&` and OR is `|`.
+
+

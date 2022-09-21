@@ -1,0 +1,102 @@
+---
+title: "lab_02"
+author: "derek willis"
+date: "8/09/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load libraries and establish settings
+```{r}
+# Turn off scientific notation
+options(scipen=999)
+
+# Load the tidyverse. If you have not installed the tidyverse already, remove the # from the next line and run it first.  
+# install.packages('tidyverse')
+library(tidyverse)
+library(lubridate)
+
+setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/labs/lab_02/")
+
+```
+
+## Load Data
+
+Let's keep working with the slice of WinRed contribution data from West Virginia.  
+
+```{r}
+wv_winred_contribs <- read_rds("data/lab_02.rds")
+```
+
+## Examine Data
+
+## Answer questions
+
+**Q1** Create a new column that divides the contribution amounts into the following options - less than $10, $10-$25, $26-$50, $51_$100, $101-$500, $501 and up - and calculates how many contributions are in each group. How would you describe the distribution of contributions in a sentence?
+
+A1. A majority of contributions are included in the amount category of $10 and $25 and the second greatest contribution amount are donations which are less than $10. It shows that people are not giving an incredibly large sum of money. 
+
+```{r}
+wv_winred_contribs_category <-wv_winred_contribs %>% 
+  mutate(
+    amount_category = case_when(
+        amount < 10 ~ "Less than $10",
+        amount >= 10 & amount <= 25 ~"Between $10 and $25",
+        amount > 25 & amount <= 50 ~ "Between $26 and $50",
+        amount > 50 & amount <= 100 ~ "Between $51 and $100",
+        amount > 100 & amount <= 500 ~ "Between $101 and $500",
+        amount > 500 ~ "Greater than $500"
+      )) %>% 
+  group_by(amount_category) %>% 
+  summarize(total_contributions = n())
+
+```
+
+Q2. Which West Virginia donors made the most contributions of less than $10? You'll need to use a combination of columns to get unique donors.  
+
+A2. Rev Dr. John Almond made the most donations of under $10. He made 293 donations of under $10.
+
+```{r}
+wv_winred_contribs %>% 
+  mutate(
+    amount_category = case_when(
+        amount < 10 ~ "Less than $10",
+        amount >= 10 & amount <= 25 ~"Between $10 and $25",
+        amount > 25 & amount <= 50 ~ "Between $26 and $50",
+        amount > 50 & amount <= 100 ~ "Between $51 and $100",
+        amount > 100 & amount <= 500 ~ "Between $101 and $500",
+        amount > 500 ~ "Greater than $500"
+      )) %>% 
+filter(amount < 10) %>% 
+group_by(last_name, first_name, address_one) %>% 
+  summarize(total_contributions = n()) %>% 
+    arrange(desc(total_contributions))
+```
+
+Q3. What questions do the results of Q2 raise in your mind? How could you use the data to explore them? No code here, just your questions.
+
+A3. One question I have is what connection Dr. John Almond has to the political candidates and if the candidates have any connection to him in any way. 
+
+Q4. Which month saw the most contributions?
+
+A4. June saw the most contributions with 4,636. 
+
+```{r}
+wv_winred_contribs %>% 
+ mutate(month = floor_date(date, "month")) %>%
+  group_by(month) %>%
+  summarize(total_contributions = n()) %>% 
+  arrange(desc(total_contributions))
+```
+
+Q5. How many contributions of $2,900 - the individual maximum donation - were there, and who did they go to? How many of the recipients are from West Virginia? Do some googling to find out.
+
+A5. There were 6 donations of exactly 2,900 and five of the donors were from West Virginia.
+
+```{r}
+wv_winred_contribs %>% 
+filter(amount == 2900)
+```
