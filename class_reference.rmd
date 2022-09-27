@@ -91,4 +91,43 @@ Filter is a vertal compression. (number of rows)
 
 AND and OR. In this case, AND is `&` and OR is `|`.
 
+### Notes from 9/26/22 class
+
+  mutate  (election_day = case_when(
+    election_day == '5+' ~ '49',
+    TRUE ~ election_day
+    
+    What this does is that you are trying to handle all your special cases firt but keeps the stuff that you don't want to change.
+      
+  The mutate column adds another row to see
+
+This code above shows us how to rename headers is they are mispelled or have a numeral in there first.
+```{r}
+cleaned_field name <- field name %>%
+  clean_names() %>% 
+  rename(column  = name we want to change)
+
+# display the cleaned dataset
+cleaned_file name
+```
+
+as.numeric() means changing a field from a character or whatever it is to a numeral field.
+
+
+This code below will show you any duplicate rows in your dada field.
+```{r}
+cleaned_filename %>% 
+  get_dupes()
+
+adding  distinct() will make sure you only see unique rows and eliminate any duplicates.
+
+```
+
+str_to_title(_____)) changes the first letter to be capital. 
+
+
+str is used to standardized things. This code below will detect any mispellings and correct them. the frist word Conowing is incorrect.
+
+  mutate(city = case_when(
+    str_detect(city,"^Conowing") ~ "Conowingo",
 

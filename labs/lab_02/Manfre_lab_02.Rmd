@@ -98,5 +98,6 @@ A5. There were 6 donations of exactly 2,900 and five of the donors were from Wes
 
 ```{r}
 wv_winred_contribs %>% 
-filter(amount == 2900)
+filter(amount == 2900) %>% 
+select(last_name, first_name, address_one,amount, memo_text)
 ```
