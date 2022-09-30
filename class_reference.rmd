@@ -155,3 +155,16 @@ filter(contributor_name == "naeme",
 arrange(desc(contribution_receipt_amount))
 ### This will show how many times an individual of a certain city comes up in a data set.
 
+## Finding out which committees somebody donated the most money to
+new_city %>%
+group_by(committee_name) %>%
+filter(contributor_name == "MASON, JUANITA",
+       contributor_city == "BALTIMORE") %>%
+summarise(total = sum(contribution_receipt_amount)) %>%
+arrange(desc(total))
+
+#This code shows how many times somebody's name appears and arranges it from greatest to least.
+new_city %>%
+  group_by(contributor_name) %>%
+  count() %>%
+  arrange(desc(n))

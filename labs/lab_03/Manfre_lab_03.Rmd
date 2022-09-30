@@ -38,7 +38,7 @@ Q1: Which seven cities in Maryland had the largest _number_ of contributions fro
 
 Note: To answer this question, you'll need to see every variation of the "contributor_city" for the top seven cities, which you should identify through some initial analysis. Then find variations of them and change those variations into the most common version.
 
-A1: The top seven cities are Baltimore (6719), Bethesda (5868), Silver Spring (4658), Chevy Chase (3260), Potomac (2301), Rockville (2213) and Annapolis (2017. 
+A1: The top seven cities are Baltimore (6726), Bethesda (5868), Silver Spring (4659), Chevy Chase (3260), Potomac (2301), Rockville (2213) and Annapolis (2017. 
 ```{r}
 ## Cleaning up data functions
 ## find what was spelled wrong...
@@ -107,14 +107,26 @@ new_city<- lab_03
 
 Q2: Find the 5-digit ZIP code in Maryland that had the highest total amount of contributions (by dollar value). Where is that zip code and what kind of area is it? Which committee is the largest recipient of money from that zip code? How many of the top five recipients are Maryland candidates?
 
-A2: 20815 is chevy chase Maryland. It is a wealthy area. The committee "Angel for Maryland is the largest recipient of money from that zip code. Two of the top five recipients are from Maryland.
-
+A2: 20815 is chevy chase Maryland. It is a wealthy area. Jamie Raskin for Congress received the highest amount of contributions from zip code 20815. Two of the five committees are from Maryland, Jamie Raskin for Congressa and Heather Miezur are both from Maryland.
 ```{r}
+
+##Mutating zip so that it is 5 digits
+new_city <- new_city %>%
+  mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L))
+
+##What zip code has the highest amount of contributions?
 new_city %>% 
 group_by(contributor_zip) %>% 
-summarise(contribution_receipt_amount, committee_name) %>% 
-arrange(desc(contribution_receipt_amount)) %>% 
-mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L)) 
+summarise(total_for_zip = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total_for_zip))
+
+##committes that got most money from 20815
+new_city %>% 
+group_by(committee_name) %>% 
+filter(contributor_zip == "20815") %>% 
+summarise(total_for_committee = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total_for_committee))
+  
 
 
 # Hint
@@ -127,9 +139,10 @@ Q3: Let's look at top individual donors to House campaigns. Write code to genera
 
 Feel free to add any interesting "color" (little interesting details) you find in your research.  
 
-A3: David Trone is a house of reps member. He is a democrat whose donations typically total 2,900. He donates to many other congressional democratic campaigns. The second largest donor is Juana Mason who donated over 3,000 times to various campaigns and varrying amounts. I did notice she gave Ann Wagner for Congress the most money 
+A3: David Trone is a house of reps member. He is a democrat whose donations typically total 2,900. He donates to many other congressional democratic campaigns. The second largest donor is Juana Mason who donated over 3,000 times to various campaigns and varrying amounts. I also noticed that Trone spent a large sum of money a few amount of times and Mason donated smaller amounts but donated many more times.
 
 ```{r}
+## Finding the highest amount of contributions and organizing from most to least
 new_city %>% 
 group_by(contributor_name, contributor_city) %>%
 summarise(count_contribs = n(), total_amount = sum(contribution_receipt_amount)) %>% 
@@ -137,14 +150,27 @@ arrange(desc(total_amount))
 
 
 ## This shows the second highest donor.
-new_city %>% 
+new_city %>%
+group_by(committee_name) %>%
 filter(contributor_name == "MASON, JUANITA",
-       contributor_city == "BALTIMORE") %>% 
-arrange(desc(contribution_receipt_amount))
+       contributor_city == "BALTIMORE") %>%
+count() %>%
+arrange(desc(n))
 
-NOTE: I was trying to figure out max and min for Juanita's donations but i kept getting error messages.
+## Finding out which committees Mason donated the most money to
+new_city %>%
+group_by(committee_name) %>%
+filter(contributor_name == "MASON, JUANITA",
+       contributor_city == "BALTIMORE") %>%
+summarise(total = sum(contribution_receipt_amount)) %>%
+arrange(desc(total))
 
+new_city %>%
+  group_by(contributor_name) %>%
+  count() %>%
+  arrange(desc(n))
 
+#NOTE: I was trying to figure out max and min for Juanita's donations but i kept getting error messages.
 
 # Hint
 # First, create a dataframe of top individual contributors
