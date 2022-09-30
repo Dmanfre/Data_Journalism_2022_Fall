@@ -130,4 +130,28 @@ str is used to standardized things. This code below will detect any mispellings 
 
   mutate(city = case_when(
     str_detect(city,"^Conowing") ~ "Conowingo",
+    
+### Notes from 9/28 class
+
+cleaned_file_name %>% 
+  get_dupes() this means R will find duplicate rows of data. Everything in one or more rows is exactly the same in every column.
+
+If you see duplicates, then you need to use   distinct(). It will show each unique row once.
+
+clean_names works on column names. 
+
+str_sub extract and replace substrings. Substrings are sub portions of a charactr... a string is anything in quotations. 
+
+str_detect means it detects the presence of absense of a pattern in a string.
+str_detect(city,"^Conowing") ~ "Conowingo", means change everything after Conowing to Conowingo. The carrot aftr the quote and before the C means only change the first few characters.
+
+String detect is handy when you need to find varriations of the same thing and clean it up. 
+
+
+### Function to find a specific name.
+new_city %>% 
+filter(contributor_name == "naeme",
+       contributor_city == "city") %>% 
+arrange(desc(contribution_receipt_amount))
+### This will show how many times an individual of a certain city comes up in a data set.
 
