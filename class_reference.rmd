@@ -106,6 +106,7 @@ This code above shows us how to rename headers is they are mispelled or have a n
 cleaned_field name <- field name %>%
   clean_names() %>% 
   rename(column  = name we want to change)
+## when using the rename function the new column name goes goes before the old column name
 
 # display the cleaned dataset
 cleaned_file name
@@ -172,15 +173,15 @@ new_city %>%
 ### Notes from Oct. 2 Class
 ### How to combine data sets into one document.
 # bind_rows with list
-
 county_voters_combined <- bind_rows(list(county_voters_2016, county_voters_2018, county_voters_2020))
 View(county_voters_combined)
-### create new variable bind_rows(list(dataset 1, 2, 3)
+### make sure to create new variable bind_rows(list(dataset 1, 2, 3)
 
 # with nrow included to show row total
 maryland_population %>% 
   left_join(county_voters_2020, by="COUNTY") %>% 
   nrow()
+  
 ### Start with data frame and then MUST INDICATE the direction of the columns you are joining. Left_join means you join it form the left to the right. By="COUNTY" means that the values in the county column of one set and another set will be the same. THEY MUST BE IDENTICAL IN ALL CASES.
 nrow() means count rows. 
 
@@ -189,3 +190,10 @@ anti_join shows you what does not match.
 right_join: I want all rows in right dataframe even if there is no value in common with the left dataframe.
 
 Left_join: I want to start with all the rows in the left data fram and join them with the frame on the right.... exclude everything that doesnt match. 
+
+### Notes and Codes from 10/5 class
+When you ned to specify with two columns use by=c("first column name", "second column name")... when its only one join it's just by=
+(look at task 9 of Pre_lab_04)... THE ORDER IN WHICH YOU LIST THE DATA FRAMES MATTERS BECAUSE IT APPLIES TO THE JOINED COLUMNS. FIRST DATAFRAME, FIRST COLUMN, SECOND DATAFRAME, SECOND COLUMN. 
+
+mutate(across(number column, as.character)) means it is changing the number column to be a character. The other way around would be as.numeric. 
+

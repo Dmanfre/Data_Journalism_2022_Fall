@@ -108,7 +108,11 @@ maryland_demographics <- read_csv('data/maryland_demographics.csv')
 
 ```{r}
 # join on zip - but there's a problem
-maryland_population_with_voters_and_demographics <- maryland_population_with_voters %>% left_join(maryland_demographics, by=c("COUNTY"="NAME"))
+# REMEMBER THAT THE FRIST COLUMN IN A JOIN COMES FROM THE FIRST DATAFRAME IN A STATEMENT 
+
+maryland_population_with_voters_and_demographics <- maryland_population_with_voters %>% 
+left_join(maryland_demographics, by=c("COUNTY"="NAME"))
+
 ```
 
 ### Task 10: Asking Demographic Questions
@@ -141,6 +145,7 @@ maryland_population_with_voters_and_demographics %>%
 Sometimes joins look like they should work but don't. Often this is due to the two columns you're joining on having different data types: joining a <chr> column to a <dbl> column, for example. Let's walk through an example of that using some demographic data by zip code.
 
 **Task** Run the following code to load the Zip Code Tabulation Area data for Maryland. What's the datatype of ZCTA5N?
+
 **Answer** 
 
 ```{r}
