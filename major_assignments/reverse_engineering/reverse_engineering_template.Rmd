@@ -1,7 +1,7 @@
 ---
 title: "Reverse Engineering Project"
-author: "Student names here"
-date: "Date here"
+author: "Dylan Manfre"
+date: "Oct. 6"
 output:
   html_document:
     theme: cerulean
@@ -24,9 +24,18 @@ In this notebook, we are reverse engineering the story, [STORY NAME](STORY URL)
 
 Loading required libraries for this analysis.
 
-```{r echo=FALSE, message=FALSE}
+```{r}
+
+options(scipen=999)
+library(tidyverse)
+library(lubridate)
+library(janitor)
+
+setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/reverse_engeneering/reverse_engeneering_teamplate.rmd/")
+
 
 ```
+
 
 ## Load and Cleaning Data
 
