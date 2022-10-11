@@ -20,7 +20,7 @@ library(tidyverse)
 library(lubridate)
 library(janitor)
 
-setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/reverse_engeneering/deliver_02/")
+setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/reverse_engeneering/Manfre_deliver_02/")
 
 
 ```
@@ -54,9 +54,11 @@ head(clean_dates)
 
 ```{r}
 clean_dates %>%
-filter(contribution_amount == "100")
+filter(contribution_amount <= 100) %>% 
+arrange(desc(contribution_amount))
 
-### We had trouble figureing out how to show the range from 0.01 to 100. We attempted multiple functions. 
+
+### We were able to get the code to show donations of 100 or less but unable to arrange them from greatest to least. Whenever I did arrange(desc(contribution_amount)) it only showed me donations of 100. 
 
 
 ```

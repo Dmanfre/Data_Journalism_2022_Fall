@@ -197,3 +197,7 @@ When you ned to specify with two columns use by=c("first column name", "second c
 
 mutate(across(number column, as.character)) means it is changing the number column to be a character. The other way around would be as.numeric. 
 
+
+### Noest for 10/10 class
+
+

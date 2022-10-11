@@ -136,7 +136,7 @@ summarise(total_votes_precinct = sum(election_night_votes,
           mail_in_ballot_2_votes)) %>%
 arrange(desc(total_votes_precinct))
 
-new_set %>% 
+Gov_Filtered %>%
 distinct(county_name, location_name, election_district_precinct)
 
 
@@ -145,7 +145,7 @@ distinct(county_name, location_name, election_district_precinct)
 Q3. Let's look at the average number of votes in each party's primary race for governor. Take the code you wrote for the last part of Q2, save the results to a new variable and then find the precincts with 0 total votes for governor. How many precincts are there, and which county has the most? What else would you need to know about these precincts to know whether this might be worth a story?
 
 12 precincts have 0 votes. Four precincts in PG county have 0 votes. You'd need to find out how many people are in that general area and also the demographics
-
+```{r}
 md_combo_results %>%
 filter(office_name == "Governor / Lt. Governor") %>%
 group_by(county_name, location_name, election_district_precinct) %>%
@@ -153,7 +153,7 @@ summarise(total_votes_precinct = sum(election_night_votes,
           early_votes, provisional_votes, mail_in_ballot_1_votes,
           mail_in_ballot_2_votes)) %>%
 arrange(desc(total_votes_precinct))
-
+```
 
 Finally, write code to calculate the average and median number of total votes across all precincts statewide (so you want to see just two numbers - the average and median). To do this, you will need to use the `ungroup()` function on your new dataframe _before_ you do the math - https://www.rdocumentation.org/packages/multiplyr/versions/0.1.1/topics/ungroup. There's no state column here, so you aren't grouping by anything, but can still use summarize to do the math.
 
