@@ -1,0 +1,107 @@
+---
+title: "R Notebook"
+output: html_notebook
+studnet name: Dylan Manfre, Abbi Ross, Ryan Mercado, Sanunu Bah
+paragrah: Sanunu's paragraph
+
+Paragraph: “We set the pace in fundraising — including raising more money in Maryland and having 73% of donations $100 or less — because this campaign has inspired thousands of people from all walks of life in Maryland and across the country who see the opportunity to make Wes Moore governor of Maryland and change the trajectories of families who have been left behind,” the campaign said in a statement."
+
+Date: Oct. 6, 2022
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+
+options(scipen=999)
+library(tidyverse)
+library(lubridate)
+library(janitor)
+
+setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/reverse_engeneering/Manfre_deliver_02/")
+
+
+```
+
+```{r}
+
+wes_moore_data <- read_csv("data/Contributionslist.csv")
+
+```
+```{r}
+### making the column names lowercase with underscore
+clean_wes_moore_data <- wes_moore_data %>% 
+clean_names()
+
+```
+
+```{r}
+### change the dates to be the proper format
+clean_dates <- clean_wes_moore_data %>% 
+mutate(contribution_date = mdy(contribution_date))
+head(clean_dates)
+
+```
+
+```{r}
+### Changing chr field to number field
+clean_dates %>% 
+mutate(across(contribution_amount, as.numeric))
+head(clean_dates)
+```
+
+```{r}
+clean_dates %>%
+filter(contribution_amount <= 100) %>% 
+arrange(desc(contribution_amount))
+
+
+### We were able to get the code to show donations of 100 or less but unable to arrange them from greatest to least. Whenever I did arrange(desc(contribution_amount)) it only showed me donations of 100. 
+
+
+```
+
+### Sentence 2
+
+* **Sentence text**: “Tom Perez, a former leader of the Democratic National Committee, raised nearly $1.7 million in donations from outside Maryland.”
+
+
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+### Tom Perez out of state data
+perez_data <- read_csv(("data/perez_data.csv"))
+
+perez_data%>%
+Filter(contribtor_state )
+group_by(contributor_state) %>% 
+summarise(total_state = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total_state))
+
+
+# Display results of code below this codeblock
+
+```
+### Sentence 3
+
+* **Sentence text**: “Tom Perez, a former leader of the Democratic National Committee, raised nearly $1.7 million in donations from outside Maryland.”
+
+
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+```{r}
+# Put code to reverse engineer sentence here
+
+### Wes Moore's out of state
+ %>% 
+group_by(contributor_state) %>% 
+summarise(total_state = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total_state))
+
+
+# Display results of code below this codeblock
+
+```
+```

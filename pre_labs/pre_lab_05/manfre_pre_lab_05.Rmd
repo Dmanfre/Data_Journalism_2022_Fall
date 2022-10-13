@@ -134,5 +134,4 @@ cleaned_dc_food %>%
 
 recipient_clean <- read_csv("data/new_dc_food.csv")
 
-
 ```
