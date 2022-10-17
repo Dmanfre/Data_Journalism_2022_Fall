@@ -148,7 +148,7 @@ perez_state_data <- perez_data %>%
 ```{r}
 ### Here I am trying to remove Maryland entirely from the data set so I can add the values that do not include Maryland.
 perez_state_data %>% 
-Filter(!contributor_state %in% ('Maryland'))
+Filter(contributor_state != "Maryland")
 
 perez_state_data %>% 
 group_by(contributor_state) %>%
@@ -243,7 +243,8 @@ moore_state_data <- clean_dates %>%
   ))
 
 ### Counting how much money Moore got from states and how many times that state came up.
-moore_state_data %>% 
+moore_state_data %>%
+filter(contrib)
 group_by(contributor_state) %>%
 summarise(total_state = sum(contribution_amount),
             mean_amount= mean(contribution_amount),
