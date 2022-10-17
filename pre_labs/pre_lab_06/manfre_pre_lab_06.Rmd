@@ -138,7 +138,7 @@ camden_2022 <- camden_2022 %>%
     precinct == 'SUNRISE BEACH 2 & 3 AND WILSON' ~ 'SUNRISE BEACH 2 & 3 AND WILSON BEND',
     TRUE ~ precinct
   ))
-### the second part of this changes the name of sunrise beach. 
+### the second part of this changes the name of sunrise beach to add bend to it.
 
 
 camden_2022
