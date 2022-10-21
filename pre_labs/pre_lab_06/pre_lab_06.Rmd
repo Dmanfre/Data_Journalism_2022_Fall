@@ -117,6 +117,7 @@ The good news is that we have data we don't have to retype. The bad news is, it'
 
 ### Task 6: Cleaning up
 **Task** Clean up the columns, datatypes & precinct names by running the codeblock below. What problems remain?
+
 **Answer**
 
 
