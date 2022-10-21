@@ -286,7 +286,7 @@ Q3. Do the party percentages of new registrants (% Dem, % Rep, % Unaffiliated) f
 
 In other words, did new registrants mirror the overall partisan composition of the electorate, or were they different? Do any of the methods of registration vary significantly from the overall partisan pattern? Which method is worthy of further exploration?
 
-A3. There are some changes in the party percentage. Republicans in Alleganey county saw a big drop from 2020-2022. I also noticed a big drop in the percentage of dems in Baltimore City. 
+A3. There are some changes in the party percentage. Republicans in Alleganey county saw a big drop from 2020-2022. I also noticed a big drop in the percentage of dems in Baltimore City. There was also a 25% difference in democrats from Anne Arundel County
 
 ```{r}
 
