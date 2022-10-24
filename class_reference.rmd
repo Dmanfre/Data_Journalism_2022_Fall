@@ -200,4 +200,6 @@ mutate(across(number column, as.character)) means it is changing the number colu
 
 ### Noest for 10/10 class
 
+### Notes from 10/24
+ACS is merely a survey.
 
