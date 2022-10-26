@@ -145,7 +145,8 @@ ACS <- load_variables(2020, "acs5")
 md <- get_acs(geography = "county",
               variables = c(medincome = "B19013_001"),
               state = "MD",
-              year = 2020)
+              year = 2020, output = "wide")
+### wide will make the columns more appropreate to work with. 
 
 md <- md %>% arrange(desc(estimate)) %>% top_n(20, estimate)
 
@@ -221,7 +222,12 @@ md10 %>%
   select(-variable.x, -variable.y, -moe.x, -moe.y) %>%
   mutate(change = ((estimate2020-estimate2010)/estimate2010)*100) %>%
   arrange(change)
+
+### This code generated the table based on the MoE
+
+
 ```
+
 
 ### Task 8: Combine with Election Data
 
