@@ -244,14 +244,15 @@ moore_state_data <- clean_dates %>%
 
 ### Counting how much money Moore got from states and how many times that state came up.
 moore_state_data %>%
-filter(year(contribution_date) == 2021) %>% 
+mutate(contribution_date=mdy(contribution_date)) %>%
+filter(year(contribution_date == 2021) %>% 
 group_by(contributor_state) %>%
 summarise(total_state = sum(contribution_amount),
             mean_amount= mean(contribution_amount),
-          n=n()) %>% 
-arrange(desc(total_state))
+          n=n()) %>%
+  arrange(desc(total_state)
 
-total_moore <- moore_state_data %>% 
+moore_state_data %>% 
 group_by(contributor_state) %>% 
 summarise(total_state =sum(contribution_amount))
 
@@ -261,7 +262,10 @@ summarise(all_state = sum(total_state)
 # Display results of code below this codeblock
 
 ```
-```
+
+
+
+
 ### Sentence 3
 
 * **Sentence text**: John B. King, former secretary of Education under President Barack Obama, raised $2.2 million in campaign funding last year. 
@@ -452,7 +456,7 @@ filter(contributor_state == "Illinois") %>%
 group_by(contributor_state) %>% 
 summarize(sum_Ill = sum(contribution_amount))
 
-#### Moore got 160,075 from Illinois
+### Moore got 160,075 from Illinois
 ### King got 157,659 from Illinois
 
 

@@ -47,7 +47,7 @@ You'll need your Census API Key:
 ## Done
 
 ```{r echo=FALSE}
-census_api_key("b249939c04681776415f4fbd06fa26fa3a5615b3", overwrite=TRUE)
+census_api_key("b249939c04681776415f4fbd06fa26fa3a5615b3", overwrite = =TRUE)
 ```
 
 ## Load and view ACS variables
@@ -178,11 +178,11 @@ pa_zips <- get_acs(geography = "zcta",
 
 ###Join the ZCTA dataframe to the zip totals dataframe and calculate a per capita rate for mail ballots per 100 population in each ZCTA,### 
 
-pa_zips_with_acs <- pa_zips %>% left_join(zip_total.csv, by=c('GEOID'='zip'))
+pa_zips_with_acs <- pa_zips %>% inner_join(zip_total.csv, by=c('GEOID'='zip'))
 
 ### mail in ballots in each zip code with >100.
 pa_zips_with_acs %>% 
-filter(count >100) %>% 
+filter(count > 100) %>% 
 mutate(per_capita_per_100 = count/total_popE*100) %>% 
 select(zip_code, per_capita_per_100) %>% 
 arrange(desc(per_capita_per_100))

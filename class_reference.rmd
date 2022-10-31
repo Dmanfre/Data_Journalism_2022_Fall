@@ -34,6 +34,12 @@ library(tidyverse)
 ```
 
 
+### Link to Tidyverse Functios
+https://dplyr.tidyverse.org/reference/index.html
+
+(There may be other lists of variables on this site too)
+
+
 Here's the path to my external drive repo:
 
 
@@ -261,3 +267,21 @@ ACS is merely a survey.
     str_detect(contributor_address, " MT ") ~ "Montana",
     TRUE ~ contributor_address
   ))
+  
+  
+### Monday 10/31 Notes
+Difference between left join and inter join
+- Left Join: see every row from the one dataset regardless if there is a match. (I'm OK with some N/As but need to see everything)
+- Right join (same thing but second frame to first.)
+- Inter join: Only see rows from both data sets where the is a match in both frames. 
+
+
+Working with graphs
+- http://byrneslab.net/classes/biol607/readings/wickham_layered-grammar.pdf
+
+-ggplot link to functions: https://ggplot2.tidyverse.org
+***-ggolot function reference page https://ggplot2.tidyverse.org/reference/ ***
+
+- geom_bar essentially means "draw me" this code uses a plus sign to add a new layer to the chart. 
+
+
