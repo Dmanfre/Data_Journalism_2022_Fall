@@ -239,7 +239,7 @@ md_winred <- read_rds("data/maryland_winred.rds")
 
 **Task** Run the following code. Explain what you see after running the code in the space below. 
 
-**Answer** We see the amount of contributions via WinRed made on each date from 4/1/22 to June 30. 
+**Answer** We see the amount of contributions via Win Red made on each date from 4/1/22 to June 30 2022.
 
 ```{r}
 
