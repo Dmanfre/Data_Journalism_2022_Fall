@@ -284,4 +284,10 @@ Working with graphs
 
 - geom_bar essentially means "draw me" this code uses a plus sign to add a new layer to the chart. 
 
+### Getting rid of special characters
+new_owner_contribs <- owner_contribs %>% 
+mutate(Amount  = str_replace_all(Amount, "[$[:punct:]]", ""))
 
+### making Amount a number field
+new_owner_contribs <- new_owner_contribs %>% 
+mutate(amount = as.numeric(amount))

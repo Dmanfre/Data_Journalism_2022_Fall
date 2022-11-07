@@ -26,15 +26,14 @@ library(lubridate)
 library(janitor)
 library(tidycensus)
 
-install.packages("ggrepel")
+#install.packages("ggrepel")
 library(ggrepel)
 library(ggplot2)
 
 ##Done
 
 ### Cleaning up the data
-md_absentee_ballots <- md_absentee_ballots %>% 
-clean_names()
+
 
 
 
@@ -56,7 +55,8 @@ md_absentee_ballots <- read_csv("data/md_absentee_ballots.csv")
 
 md_active_voters <- read_csv("data/md_active_voters.csv")
 
-
+md_absentee_ballots <- md_absentee_ballots %>% 
+clean_names()
 ```
 
 ## Questions 
@@ -71,16 +71,14 @@ md_active_voters <- read_csv("data/md_active_voters.csv")
 
 ```{r}
 
-md_absentee_ballots %>% 
-head()
-
 ### making the total absentee ballots a percentage
 top_10_counties <- md_absentee_ballots %>% 
 mutate(perc_returned = total_received/total_sent*100) %>% 
-head(10) %>% 
-select(county_name, perc_returned)
+select(county_name, perc_returned) %>% 
+arrange(desc(perc_returned)) 
 
 top_10_counties %>% 
+  head(10) %>% 
 ggplot() +
 geom_bar(aes(x=reorder(county_name, perc_returned), weight=perc_returned))+
 coord_flip()+
@@ -182,7 +180,7 @@ Looking at the raw data the numbers are very low overall yet the percentages sho
 ```{r}
 ### Loading in data and isolating 18-24 year old.
 
-early_vote_raw <- read.csv("data/EarlyVoting_RAW_data.csv")
+early_vote_raw <- read_csv("data/EarlyVoting_RAW_data.csv")
 
 early_vote_raw <- early_vote_raw %>%
 clean_names()
@@ -231,7 +229,6 @@ mutate(UNK_perc = UNK/total_votes*100,
 perc_votes %>% 
 ggplot() +
 geom_point(aes(x=M_perc, y=F_perc, label=county_name)) +
-geom_text(aes(x=M_perc, y=F_perc, label=county_name))+
 labs(
     title="Percentage of votes by gender in each county",
     y = "Female",

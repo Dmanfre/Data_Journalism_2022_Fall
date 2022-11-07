@@ -171,6 +171,7 @@ To answer those questions, do the following:
 4. Make a scatterplot showing the percentage of early votes cast by gender in each county, with male and female on separate axes. I didn't show you how to do this, so look it up! Googling "ggplot scatterplot" is a good start.
 
 5. Give it an appropriate title, source, and x and y axis titles.
+
 6. Add a label for each point that shows the name of the county using geom_text(). Try to make the names as easy to read as possible - 
 
 7. In the answer space below, describe what you see and answer the questions posed above. In a general sense, what do you think this means? Feel free to consider the actual raw values: how would you report out the main point(s) of this chart?
