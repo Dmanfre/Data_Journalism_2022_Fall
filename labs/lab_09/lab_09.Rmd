@@ -1,0 +1,249 @@
+---
+title: "lab_09"
+author: "Derek Willis"
+date: "11/09/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/labs/lab_09/")
+
+
+```
+
+## You will need
+
+* the tidyverse, janitor and tigris libraries
+* you might choose to use the tidycensus library for Q4
+
+## Load libraries and establish settings
+
+**Task** Create a codeblock and load appropriate packages and settings for this lab.
+
+```{r}
+# Turn off scientific notation
+options(scipen=999)
+
+# Load libraries
+
+library(tidyverse)
+library(sf)
+library(janitor)
+library(tidycensus)
+library(tigris)
+
+
+```
+
+Let's explore the election results from last night and make some maps! 
+
+## Questions 
+
+**Q1.** Make a county-level map of Maryland's results for governor using `md_gov_county.csv` in the data folder, calculating the difference between Wes Moore's percentage of the total votes and Dan Cox's percentage of the total votes and displaying that percentage difference on the map. What is the story here, and what is the county with the most interesting results?
+
+**A1.**  There story here is that Wes Moore blew out Dan Cox in certain counties. Baltimore City and PG County is the most interesting becuase Moore won it by a 78 point margin. Garrett county as well as a vast difference in favor of Cox. 
+
+```{r}
+## Load data
+md_gov_county <- read_csv("data/md_gov_county.csv")
+
+## clean naes
+md_gov_county <- md_gov_county %>% 
+clean_names()
+
+## getting the county totals
+md_gov_county <- md_gov_county %>% 
+mutate(total_county = cox+moore+lashar+wallace+harding+write_ins)
+
+## calculating the percentage of the total vote in each county for Moore and Cox
+md_gov_county <- md_gov_county %>% 
+mutate(cox_perc = cox/total_county*100) %>% 
+mutate(moore_perc = moore/total_county*100)
+
+## calculating the percent difference 
+md_gov_county <- md_gov_county %>% 
+mutate(perc_diff = moore_perc-cox_perc)
+
+## loading in counties
+ counties <- counties()
+ 
+ glimpse(counties)
+
+ ## Filtering for Maryland counties
+ md_counties <- counties %>%
+  filter(STATEFP == "24")
+
+### changing GEOID to be a number column
+
+md_counties <- md_counties %>% 
+  mutate(GEOID = as.numeric(GEOID))
+  
+  glimpse(md_counties)
+  
+  md_counties_joined <- inner_join(md_counties, md_gov_county, by=c('GEOID'='geoid'))
+
+
+#### Starting to crete the map ###
+ md_counties_joined %>% 
+ ggplot() +
+  geom_sf() +
+  theme_minimal()
+ 
+ ###
+  md_counties_joined %>%
+  ggplot() +
+  geom_sf(data=md_counties_joined, aes(fill=perc_diff)) +
+  theme_minimal()+
+  scale_fill_viridis_b(option="magma")
+
+
+
+```
+
+**Q2.** Make another map showing the difference between Dan Cox's county-level performance in 2022 and Larry Hogan's in 2018, using percentages to compare the two as you did in Q1. You can use the dataframe you initially loaded for Q1, and you'll need to load the 2018 governor results in the data folder and join them to it before proceeding. Are there any counties where Cox got a higher percentage than Hogan? How would you describe the map showing the Hogan-Cox difference?
+
+Also answer this: is a map the best way to present this data? What else could you make that might convey more information?
+
+**A2.** There are no counties where Cox had a higher percentage than Hogan however Hogan has some large margins over Cox in certain counties like Baltimore City and Anne Arundel. In eastern Maryland, there is a smaller differential than in Western Maryland where the two appear to have gotten a bit closer together. I think a better way to present the data would be a double bar graph showing side by side Hogan's numbers and Cox's numbers.
+
+```{r}
+# Loading in Hogan's data
+
+md_gov_county_18 <- read_csv("data/md_gov_county_18.csv")
+#cleaning
+md_gov_county_18 <- md_gov_county_18 %>% 
+clean_names()
+
+# Joining hogan's numbers in with 2022 numbers
+new_md_counties_joined <- inner_join(md_gov_county_18, md_gov_county, by=c('geoid'='geoid'))
+
+# making a hogan percentage of total vote column
+new_md_counties_joined <- new_md_counties_joined %>% 
+mutate(hogan_perc = hogan/total_county*100)
+
+## calculating the percent difference 
+new_md_counties_joined %>% 
+mutate(cox_hogan_perc_diff = hogan_perc-cox_perc) %>% 
+select(county.x, hogan_perc, cox_perc, cox_hogan_perc_diff)
+### Baltimore County and Anne Arundel have blow out differentials
+
+
+### making the map 
+
+### joining md_counties with new_md_counties_joined
+joined_with_shapes <- inner_join(md_counties, new_md_counties_joined, by=c('GEOID'='geoid'))
+
+
+### showing the map
+ joined_with_shapes %>% 
+ ggplot() +
+  geom_sf(data=joined_with_shapes, aes(fill=cox_hogan_perc_diff)) +
+  theme_minimal()+
+  scale_fill_viridis_b(option="magma")
+
+
+```
+
+**Q3** Which county has the highest percentage of mail ballots remaining to be counted? Using the `mail_remaining.csv` file in the data folder, calculate the percentage of mail ballots remaining, then map a county map of those percentages. Looking at both the map and the data, are there counties where the candidate currently leading the governor's race could, in theory, change?
+
+**A3**  Calvert still has a high percentage remaining to be counted so this is a county that is too early to determine. We would need to count more ballots in order to see who would win the county. 
+```{r}
+
+## load in mail_remaining.csv
+mail_remaining <- read_csv("data/mail_remaining.csv")
+#cleaning
+mail_remaining <- mail_remaining %>% 
+  clean_names()
+
+# calculate the percentage of mail ballots remaining
+mail_remaining <- mail_remaining %>% 
+mutate(remain_perc = remaining/total_returned*100)
+
+## making the map
+## adding the geometry column
+joined_mail_remain <- inner_join(md_counties, mail_remaining, by=c('GEOID'='geoid'))
+
+## showing teh map
+joined_mail_remain %>% 
+ ggplot() +
+  geom_sf(data=joined_mail_remain, aes(fill=remain_perc)) +
+  theme_minimal()+
+  scale_fill_viridis_b(option="magma")
+##
+
+
+```
+
+
+**Q4.** Choose your own map adventure! In the data folder I've included county-level results for several other 2022 contests, including the Comptroller, Attorney General and the marijuana legalization amendment. I've also added the 2020 presidential results by county. Using one of the 2022 races that we haven't already used and at least one other contest for comparison, make a county-level map showing what you think is the most interesting aspect of that data, and describe the results in terms of a possible story. You can bring in other data, such as Census information, if you like.
+
+**A4.**  The following counties voted to legalize weed in 2022 and had a majority Trump vote in 2020: Worchester, Somerset, Frederick, Wicomico, Talbot, Anne Arundel, Kent, 
+
+
+```{r}
+Percentage of each county that voted to legal marijuana AND voted Trump in 2020
+
+# load data
+legal_weed_county <- read_csv("data/md_marijuana_county.csv")
+md_pres_county_20 <- read_csv("data/md_pres_county_20.csv")
+
+## cleaning
+legal_weed_county <- legal_weed_county %>% 
+clean_names()
+
+md_pres_county_20 <- md_pres_county_20 %>% 
+clean_names()
+
+## getting the total count per county and then the percentage for weed
+legal_weed_county <- legal_weed_county %>% 
+mutate(total_county = in_favor+against) %>% 
+mutate(for_perc = in_favor/total_county*100)
+
+### getting total county per county and then percentage for pres trump
+md_pres_county_20 <- md_pres_county_20 %>% 
+mutate(total_county = trump+biden+jorgensen+hawkins+segal) %>% 
+mutate(trump_perc = trump/total_county*100)
+
+
+
+
+### joining it with county
+
+joined_set <- inner_join(md_counties, legal_weed_county, by=c('GEOID'='geoid'))
+
+## joining it with pres data
+
+joined_with_pres <- inner_join(joined_set, md_pres_county_20, by=c('GEOID'='geoid'))
+
+joined_with_pres <- joined_with_pres %>%
+  select(NAME, in_favor, against, total_county.x, for_perc, trump, total_county.y, trump_perc, geometry)
+
+
+## making maps
+
+### map showing break down of in favor of weed
+joined_with_pres %>% 
+ ggplot() +
+  geom_sf(data=joined_with_pres, aes(fill=for_perc)) +
+  theme_minimal()+
+  scale_fill_viridis_b(option="magma")
+
+
+### map showing trump voting percentage
+joined_with_pres %>% 
+ ggplot() +
+  geom_sf(data=joined_with_pres, aes(fill=trump_perc)) +
+  theme_minimal()+
+  scale_fill_viridis_b(option="magma")
+
+## trump counties: Worcester, Somerset, Wicomico, Dorchester, St. Maries, Calvert, Talbot, Anne Arundel, Cecil, Kent, Queen's Anne, Garrett, Allegany, Washington, Frederick, Carroll
+
+## in favor of weed counties: Frederick, Baltimore, Baltimore City, Montgomery, PG, Charles, Wicomico, Worchester, Talbot, Kent, Anne Arundel, 
+
+## Same: Worchester, Somerset, Frederick, Wicomico, Talbot, Anne Arundel, Kent, 
+
+
+```
+-30-
