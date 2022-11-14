@@ -133,7 +133,7 @@ select(county.x, hogan_perc, cox_perc, cox_hogan_perc_diff)
 ### making the map 
 
 ### joining md_counties with new_md_counties_joined
-joined_with_shapes <- inner_join(md_counties, new_md_counties_joined, by=c('GEOID'='geoid'))
+joined_with_shapes <- inner_join(md_counties, new_md_counties_joined, by=c('geoid'='GEOID'))
 
 
 ### showing the map
@@ -183,7 +183,7 @@ joined_mail_remain %>%
 
 
 ```{r}
-Percentage of each county that voted to legal marijuana AND voted Trump in 2020
+#Percentage of each county that voted to legal marijuana AND voted Trump in 2020
 
 # load data
 legal_weed_county <- read_csv("data/md_marijuana_county.csv")
