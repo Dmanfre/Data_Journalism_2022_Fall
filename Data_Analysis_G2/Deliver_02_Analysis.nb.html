@@ -1894,10 +1894,41 @@ connections to the candidates</strong></p>
 <!-- rnb-frame-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9wX2JsYWlyX2NvbnRyaWJzXzE4IDwtIGJsYWlyX2NvbnRyaWJzXzIwMTggJT4lXG4gIG11dGF0ZShjb250cmlidXRvcl9uYW1lID0gY2FzZV93aGVuKFxuICAgIGNvbnRyaWJ1dG9yX25hbWUgPT0gXCJCTEFJUiAgREFWSUQgIFRIT01BU1wiIH4gXCJCbGFpciAgRGF2aWQgIFRob21hc1wiLFxuICAgIFRSVUUgfiBjb250cmlidXRvcl9uYW1lXG4gICkpICU+JVxuICBncm91cF9ieShjb250cmlidXRvcl9uYW1lKSAlPiVcbiAgc3VtbWFyaXplKHRvdGFsID0gc3VtKGNvbnRyaWJ1dGlvbl9hbW91bnQpKSAlPiVcbiAgYXJyYW5nZShkZXNjKHRvdGFsKSkgJT4lXG4gIGhlYWQoNSlcblxuIyMjIERhdmlkIEJsYWlyIGhhcyBmYW1pbHkgd2hvIGRvbmF0ZWQgdG8gaGltIGluIDIwMjIgYW5kIDIwMTggYW5kIHRoZXkgYXJlIGFsbCBoaXMgdG9wIDUgZG9ub3JzLlxuXG5gYGAifQ== -->
+<pre class="r"><code>top_blair_contribs_18 &lt;- blair_contribs_2018 %&gt;%
+  mutate(contributor_name = case_when(
+    contributor_name == &quot;BLAIR  DAVID  THOMAS&quot; ~ &quot;Blair  David  Thomas&quot;,
+    TRUE ~ contributor_name
+  )) %&gt;%
+  group_by(contributor_name) %&gt;%
+  summarize(total = sum(contribution_amount)) %&gt;%
+  arrange(desc(total)) %&gt;%
+  head(5)
+
+### David Blair has family who donated to him in 2022 and 2018 and they are all his top 5 donors.
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9wX2VscmljaF9jb250cmlic18yMiA8LSBlbHJpY2hfY29udHJpYnNfMjAyMiAlPiVcbiAgZ3JvdXBfYnkoY29udHJpYnV0b3JfbmFtZSkgJT4lXG4gIHN1bW1hcml6ZSh0b3RhbCA9IHN1bShjb250cmlidXRpb25fYW1vdW50KSkgJT4lXG4gIGFycmFuZ2UoZGVzYyh0b3RhbCkpICU+JVxuICBoZWFkKDYpXG5gYGAifQ== -->
+<pre class="r"><code>top_elrich_contribs_22 &lt;- elrich_contribs_2022 %&gt;%
+  group_by(contributor_name) %&gt;%
+  summarize(total = sum(contribution_amount)) %&gt;%
+  arrange(desc(total)) %&gt;%
+  head(6)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9wX2VscmljaF9jb250cmlic18xOCA8LSBlbHJpY2hfY29udHJpYnNfMjAxOCAlPiVcbiAgZ3JvdXBfYnkoY29udHJpYnV0b3JfbmFtZSkgJT4lXG4gIHN1bW1hcml6ZSh0b3RhbCA9IHN1bShjb250cmlidXRpb25fYW1vdW50KSkgJT4lXG4gIGFycmFuZ2UoZGVzYyh0b3RhbCkpICU+JVxuICBoZWFkKDYpXG5cbiMjIyBJbiAyMiwgRWxyaWNoIHdhcyBoaXMgTm8uIDIgZG9ub3IgYnV0IGhlIGdvdCBhIGxvdCBvZiBtb25leSBmcm9tIHRoZSBNb250Z29tZXJ5IENvdW50eSBnb3Zlcm5tZW50LiBcblxuYGBgIn0= -->
+<pre class="r"><code>top_elrich_contribs_18 &lt;- elrich_contribs_2018 %&gt;%
+  group_by(contributor_name) %&gt;%
+  summarize(total = sum(contribution_amount)) %&gt;%
+  arrange(desc(total)) %&gt;%
+  head(6)
+
+### In 22, Elrich was his No. 2 donor but he got a lot of money from the Montgomery County government. 
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -2021,7 +2052,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("Deliver_01.Rmd");
+  window.initializeSourceEmbed("Deliver_02_Analysis.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

@@ -117,7 +117,7 @@ md_gov_county_18 <- md_gov_county_18 %>%
 clean_names()
 
 # Joining hogan's numbers in with 2022 numbers
-new_md_counties_joined <- inner_join(md_gov_county_18, md_gov_county, by=c('geoid'='geoid'))
+new_md_counties_joined <- inner_join(md_gov_county_18, md_gov_county, by=c('GEOID'='GEOID'))
 
 # making a hogan percentage of total vote column
 new_md_counties_joined <- new_md_counties_joined %>% 
