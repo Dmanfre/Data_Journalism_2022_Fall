@@ -1,0 +1,36 @@
+---
+title: "state_profile"
+author: "Dylan Manfre"
+date: "2022-11-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/major_assignments/state_profile/")
+
+```
+
+```{r}
+#libraries
+library(tidyverse)
+library(janitor)
+library(lubridate)
+
+
+
+# loading in datat
+
+pa_dem_contribs <- read.csv("data/pa_dem_contribs_21_22.csv")
+head(pa_dem_contribs)
+
+#cleaning data
+
+pa_dem_contribs %>% 
+mutate(contribution_receipt_date = ymd(contribution_receipt_date))
+
+
+```
+
+
