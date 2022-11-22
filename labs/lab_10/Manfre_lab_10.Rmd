@@ -139,6 +139,8 @@ What do you think the story here is, and what would you want to know more about?
 
 **A3.** 
 
+**The story here is that some Maryland zipcodes in PG county it seems like have given a ton of money to ActBlue. This is an outlire among other counties and zip codes because the rest haven't given much at all. Another possible angle to this is the fact that so little was given. 
+
 ```{r}
 #loading data
 md_actblue_zip <- read_csv("data/md_actblue_zip.csv")
