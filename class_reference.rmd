@@ -291,3 +291,23 @@ mutate(Amount  = str_replace_all(Amount, "[$[:punct:]]", ""))
 ### making Amount a number field
 new_owner_contribs <- new_owner_contribs %>% 
 mutate(amount = as.numeric(amount))
+
+
+### Keyboard shutcuts 
+
+new variable is opt -
+
+removing one dataset from the enviornment tab is rm(list = "file name")
+
+
+
+
+
+#Data scrapping
+
+* When doing this, always read in the HTML code and save it to a variable. 
+ag_url <- "https://elections.maryland.gov/elections/2022/general_results/gen_detail_results_2022_3_1.html"
+```
+*This will turn lists of html code into tables.
+html_elements('li') %>% html_text() %>% as_tibble()
+

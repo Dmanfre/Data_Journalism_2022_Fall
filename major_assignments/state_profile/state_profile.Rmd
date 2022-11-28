@@ -17,20 +17,152 @@ setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data J
 library(tidyverse)
 library(janitor)
 library(lubridate)
+```
 
-
-
-# loading in datat
-
-pa_dem_contribs <- read.csv("data/pa_dem_contribs_21_22.csv")
+**This section will be where I load in my datasets**
+```{r}
+# loading in the PA Democratic Contributions
+pa_dem_contribs <- read_csv("data/pa_dem_contribs_21_22.csv")
 head(pa_dem_contribs)
 
-#cleaning data
+#laoding in GOP contribs
+pa_gop_contribs <- read_csv("data/pa_gop_contribs_21_22.csv")
+head(pa_gop_contribs)
 
-pa_dem_contribs %>% 
-mutate(contribution_receipt_date = ymd(contribution_receipt_date))
+#loading in Democratic Expenses
+pa_dem_expenses <- read_csv("data/pa_dem_expenses_21_22.csv")
+head(pa_dem_expenses)
+
+#loading in GOP expenses
+pa_gop_expenses <- read_csv("data/pa_gop_expenses_21_22.csv")
+head(pa_gop_expenses)
+
+```
+
+**This section will be where I clean each dataset.**
+**Each dataset will get its own codeblock for cleaning so that it is organized.**
+
+```{r}
+## Cleaning pa_dem_contribs
+
+
+pa_dem_contribs <- pa_dem_contribs %>% 
+select(-image_number, -line_number, -transaction_id, -file_number, -committee_name...9, -candidate_id, -candidate_prefix, -candidate_suffix, -candidate_office, -candidate_office_full, -candidate_office_state, -candidate_office_state_full, -candidate_office_district, -conduit_committee_id)
+
+# renaming columns
+pa_dem_contribs <- pa_dem_contribs %>% 
+rename(committee_name = committee_name...2)
 
 
 ```
+
+```{r}
+# cleaning pa_dem_expenses
+
+ pa_dem_expenses
+
+
+
+```
+
+
+```{r}
+# cleaning pa_gop_contribs
+
+pa_gop_contribs
+
+```
+
+
+```{r}
+#cleaning pa_gop_expenses
+
+pa_gop_expenses
+
+
+```
+
+
+***Story time***
+In order to do a complete analysis of the Pennsylvania Republican and Democratic Parties, we need to understand and learn who the major players are. Basically, we need to answer the five W’s for each party: who, what, where, when and why. This is the basic level of analysis for the two parties but we truly can go through a rabbit hole in each file.
+
+I’ll structure it like this: I’ll write a question, then below put the code block for the answer and then write the answer out with a piece of analysis under it. Let’s start with the Democratic contributions from Pennsylvania. Money in and money out are the two most important things in a financial report. Pennsylvania as of the analysis done Nov. 27, received $14,897,061. 
+
+```{r}
+# How much did Pennsylvania raise in total.. number as of Nov. 27
+
+pa_dem_contribs %>% 
+summarize(total_pa_dem_contribs = sum(contribution_receipt_amount))
+
+# the result of this code is a 1x1 tibble with the total 14897061
+```
+
+It appears that Pennsylvania’s democratic party only got 15% of its overall donations from individuals which tells me that the average Joe in the state, is not pouring money into the committee. What surprised me about this was that individuals in the state gave $1,660,669 more than large political action committees did.
+
+```{r}
+#showing how much each entity donated and breaking it down by percentage
+dem_entity_perc <- pa_dem_contribs %>%
+group_by(entity_type) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+mutate(perc_total = total/14897061*100) %>% 
+arrange(desc(perc_total))
+
+```
+
+```{r}
+# showing difference between IND and PAC
+2314694.2-654025.6
+```
+
+
+
+
+
+
+
+```{r}
+# showing the top 10 individual doners
+pa_dem_contribs %>%
+filter(entity_type == "IND") %>% 
+group_by(contributor_name, contributor_state, contribution_receipt_date, contribution_receipt_amount) %>% 
+arrange(desc(contribution_receipt_amount)) %>% 
+select(contributor_name, contributor_state, contribution_receipt_date, contribution_receipt_amount) %>% 
+head(10)
+
+# showing the top donors, where they're from and how much they gave in total. 
+pa_dem_contribs %>%
+filter(entity_type == "IND") %>% 
+group_by(contributor_name, contributor_city, contributor_state) %>% 
+summarise(total_contrib = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total_contrib))
+
+## State ranking and % from individuals not PACs or anything?
+dem_state_perc_ind <- pa_dem_contribs %>%
+filter(entity_type == "IND") %>% 
+group_by(contributor_state) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+mutate(perc_total = total/14897061*100) %>% 
+arrange(desc(perc_total))
+### The percentages from individuals is quite small here with PA's totals making up just 15%. This tells me that the Dem committee as a whole is not getting much money from individual donations and is likely getting more from others.
+
+#Which entity gave the most?
+dem_entity_perc <- pa_dem_contribs %>%
+group_by(entity_type) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+mutate(perc_total = total/14897061*100) %>% 
+arrange(desc(perc_total))
+### COM makes up 50% of the donations here which is "Other committees". 
+
+pa_dem_contribs %>% 
+filter(entity_type == "COM")
+
+
+```
+
+
+
+
+
+
 
 
