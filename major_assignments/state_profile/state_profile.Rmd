@@ -17,6 +17,7 @@ setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data J
 library(tidyverse)
 library(janitor)
 library(lubridate)
+
 ```
 
 **This section will be where I load in my datasets**
@@ -51,8 +52,12 @@ select(-image_number, -line_number, -transaction_id, -file_number, -committee_na
 
 # renaming columns
 pa_dem_contribs <- pa_dem_contribs %>% 
-rename(committee_name = committee_name...2)
+rename(committee_name = committee_name...2) %>% 
+mutate(contribution_receipt_date = ymd(contribution_receipt_date)) %>% 
+mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L))
 
+
+pa_gop_orgs
 
 ```
 
@@ -68,8 +73,12 @@ rename(committee_name = committee_name...2)
 
 ```{r}
 # cleaning pa_gop_contribs
+pa_gop_contribs <- pa_gop_contribs %>% 
+select(-image_number, -line_number, -transaction_id, -file_number, -committee_name...9, -candidate_id, -candidate_prefix, -candidate_suffix, -candidate_office, -candidate_office_full, -candidate_office_state, -candidate_office_state_full, -candidate_office_district, -conduit_committee_id) %>% 
+rename(committee_name = committee_name...2) %>% 
+mutate(contribution_receipt_date = ymd(contribution_receipt_date)) %>% 
+mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L))
 
-pa_gop_contribs
 
 ```
 
@@ -97,38 +106,106 @@ summarize(total_pa_dem_contribs = sum(contribution_receipt_amount))
 # the result of this code is a 1x1 tibble with the total 14897061
 ```
 
-It appears that Pennsylvania’s democratic party only got 15% of its overall donations from individuals which tells me that the average Joe in the state, is not pouring money into the committee. What surprised me about this was that individuals in the state gave $1,660,669 more than large political action committees did.
+It appears that Pennsylvania’s democratic party only got 15% of its overall donations from individuals which tells me that the average Joe in the state, is not pouring money into the committee. What surprised me about this was that individuals in the state gave $1,660,668 more than large political action committees did. 
 
 ```{r}
-#showing how much each entity donated and breaking it down by percentage
+#showing how much each entity donated and breaking it down by percentage for dems
 dem_entity_perc <- pa_dem_contribs %>%
-group_by(entity_type) %>% 
+group_by(entity_type, entity_type_desc) %>% 
 summarize(total = sum(contribution_receipt_amount)) %>% 
 mutate(perc_total = total/14897061*100) %>% 
 arrange(desc(perc_total))
 
+# showing difference between IND and PAC for Dems
+ind_pac_dem_difference <- 2314694.2-654025.6
+dem_entity_perc
+
+#showing how much each entity donated and breaking it down by percentage for GOP
+gop_entity_perc <- pa_gop_contribs %>%
+group_by(entity_type, entity_type_desc) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+mutate(perc_total = total/14897061*100) %>% 
+arrange(desc(perc_total))
+
+gop_entity_perc
+
+
 ```
+Comparing the Dems to the GOP is interesting here as it shows that PACs still lags behind Individual contributors to the GOP which is noteworthy because I figured it would give more to the GOP. There is, however, a massive drop-off in the other committee category. It only makes up 2% of donations to the GOP where as the Democrats got 50% of its fundraising from that category alone.
+
+We need to look at the top key players here. Who donated the most to Pennsylvania’s Democratic and Republican Committees and where did they come from? Are they prominent people at all? Did any one person make up a large percentage of the total donations? We’ll do this for the Republicans too.
+```{r}
+# Where did the GOP contribs come from.
+pa_gop_contribs %>% 
+group_by(contributor_name, contributor_employer) %>% 
+summarize(state_total = sum(contribution_receipt_amount)) %>% 
+mutate(perc_total = state_total/14897061*100) %>% 
+arrange(desc(perc_total))
+```
+From here, we can use the same code to break this down by entity type to look at the specific individuals and analyze if they are prominent at all. 
+
+
+
 
 ```{r}
-# showing difference between IND and PAC
-2314694.2-654025.6
-```
-
-
-
-
-
-
-
-```{r}
-# showing the top 10 individual doners
-pa_dem_contribs %>%
+pa_gop_contribs %>% 
 filter(entity_type == "IND") %>% 
-group_by(contributor_name, contributor_state, contribution_receipt_date, contribution_receipt_amount) %>% 
-arrange(desc(contribution_receipt_amount)) %>% 
-select(contributor_name, contributor_state, contribution_receipt_date, contribution_receipt_amount) %>% 
-head(10)
+group_by(contributor_name) %>% 
+summarise(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+#Notes: 14 people gave the maximum of $20k in the period for the GOP
 
+
+pa_dem_contribs %>% 
+filter(entity_type == "IND") %>% 
+group_by(contributor_name) %>% 
+summarise(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+#Notes 7 people gave the max of 20k in the period for the dem campaign.
+
+
+```
+
+
+
+
+Here I will write an analysis of what these code blocks show and compare the top individual Republican and Democratic donors
+
+
+**Put your analysis of the ORG findings here**
+
+```{r}
+# showing the orgs doners for DEMOCRATS
+pa_dem_orgs <- pa_dem_contribs %>% 
+filter(entity_type == "ORG") %>% 
+group_by(contributor_name) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+
+pa_dem_orgs
+
+# showing the top doners for GOP
+pa_gop_orgs <- pa_gop_contribs %>% 
+filter(entity_type == "ORG") %>% 
+group_by(contributor_name) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+
+pa_gop_orgs
+
+```
+
+
+
+
+
+
+
+
+
+
+**Use this section for codes to work with before you put them in the story section **
+```{r}
 # showing the top donors, where they're from and how much they gave in total. 
 pa_dem_contribs %>%
 filter(entity_type == "IND") %>% 
@@ -153,8 +230,25 @@ mutate(perc_total = total/14897061*100) %>%
 arrange(desc(perc_total))
 ### COM makes up 50% of the donations here which is "Other committees". 
 
+#which organization gave the most to the dem party?
 pa_dem_contribs %>% 
-filter(entity_type == "COM")
+filter(entity_type == "ORG") %>% 
+group_by(contributor_name) %>% 
+count() %>% 
+arrange(desc(n))
+  
+  
+#summarize(total = sum(contribution_receipt_amount)) %>% 
+count()
+
+
+# Which contributor gave the most out of any category... Fetterman/Schumer are key names up there. 
+pa_dem_contribs %>% 
+filter(entity_type == "ORG") %>% 
+group_by(contributor_name) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+
 
 
 ```

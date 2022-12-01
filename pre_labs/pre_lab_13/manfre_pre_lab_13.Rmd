@@ -256,7 +256,10 @@ Ok, so now we can see the committee names. But they are surrounded by a bunch of
 **Answer** It puts that list in 10b into a tibble but it doesnt look perfect because there are a bunch of spaces. 
 
 ```{r}
-committees <- cmte_results %>% html_elements('li') %>% html_text() %>% as_tibble()
+committees <- cmte_results %>% 
+  html_elements('li') %>% 
+  html_text() %>% 
+  as_tibble()
 ```
 
 Now we're getting closer. The rows in this dataframe we don't want begin with a newline character `\n`. Let's get rid of those using `filter()` and rename our single column:

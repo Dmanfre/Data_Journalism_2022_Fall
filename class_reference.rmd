@@ -42,7 +42,8 @@ https://dplyr.tidyverse.org/reference/index.html
 
 Here's the path to my external drive repo:
 
-
+#changing a column to be a dates column. 
+mutate(dates = mdy(dates))
 
 ### Summarizing
 
