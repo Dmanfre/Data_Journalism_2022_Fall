@@ -38,6 +38,15 @@ head(pa_dem_expenses)
 pa_gop_expenses <- read_csv("data/pa_gop_expenses_21_22.csv")
 head(pa_gop_expenses)
 
+#loading in GOP expenses
+new_gop_expenses <- read_csv("data/new_gop_expenses.csv")
+head(new_gop_expenses)
+
+#loading in new_dem_expenses
+new_dem_expenses <- read_csv("data/new_dem_expenses.csv")
+head(new_dem_expenses)
+
+
 ```
 
 **This section will be where I clean each dataset.**
@@ -57,14 +66,15 @@ mutate(contribution_receipt_date = ymd(contribution_receipt_date)) %>%
 mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L))
 
 
-pa_gop_orgs
+
 
 ```
 
 ```{r}
 # cleaning pa_dem_expenses
 
- pa_dem_expenses
+ new_dem_expenses
+
 
 
 
@@ -86,8 +96,8 @@ mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L))
 ```{r}
 #cleaning pa_gop_expenses
 
-pa_gop_expenses
-
+new_gop_expenses
+#not much cleaning to do here
 
 ```
 
@@ -100,7 +110,7 @@ I’ll structure it like this: I’ll write a question, then below put the code 
 ```{r}
 # How much did Pennsylvania raise in total.. number as of Nov. 27
 
-pa_dem_contribs %>% 
+total_pa_dem_contribs <- pa_dem_contribs %>% 
 summarize(total_pa_dem_contribs = sum(contribution_receipt_amount))
 
 # the result of this code is a 1x1 tibble with the total 14897061
@@ -144,9 +154,7 @@ arrange(desc(perc_total))
 ```
 From here, we can use the same code to break this down by entity type to look at the specific individuals and analyze if they are prominent at all. 
 
-
-
-
+**Say here if any of the people were prominant**
 ```{r}
 pa_gop_contribs %>% 
 filter(entity_type == "IND") %>% 
@@ -155,14 +163,28 @@ summarise(total = sum(contribution_receipt_amount)) %>%
 arrange(desc(total))
 #Notes: 14 people gave the maximum of $20k in the period for the GOP
 
-
 pa_dem_contribs %>% 
 filter(entity_type == "IND") %>% 
-group_by(contributor_name) %>% 
+group_by(contributor_name, contributor_state) %>% 
 summarise(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
 #Notes 7 people gave the max of 20k in the period for the dem campaign.
 
+each_state_dem <- 
+pa_dem_contribs %>% 
+filter(contributor_state != "PA") %>%
+group_by(contributor_state) %>% 
+summarise(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+# PA received $12,145,267 in out-of-state contributions
+# DC gave the most with $9,392,229.88 followed by NY and CA.
+
+#each_state_gop<- 
+pa_gop_contribs %>% 
+filter(contributor_state != "PA") %>%
+group_by(contributor_state) %>% 
+summarise(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
 
 ```
 
@@ -196,7 +218,36 @@ pa_gop_orgs
 ```
 
 
+Something I've found interesting is that refunds are issued. As someone who was never really knowledgeable about campaign finance, the fact that you can eb issued a refund of your donation was thought-provoking. Both parties refunded a combined $14,212.96 to individual contributors.
+```{r}
+#looking for refunds
 
+new_dem_expenses %>% 
+group_by(disbursement_type_description) %>% 
+summarize(total = sum(disbursement_amount)) %>% 
+arrange(desc(total))
+#203 people got refunds to individuals totaling $13,927.63
+
+new_gop_expenses %>% 
+group_by(disbursement_type_description) %>% 
+summarize(total = sum(disbursement_amount)) %>% 
+arrange(desc(total))
+#285.33 given back to individauls for GOP.
+
+
+gop_dem_total_refund <- 13927.63+285.33
+```
+```{r}
+
+new_dem_expenses %>% 
+filter(entity_type_desc == "ORGANIZATION") %>% 
+group_by(disbursement_description) %>% 
+summarize(total_category = sum(disbursement_amount)) %>% 
+arrange(desc(total_category))
+
+
+
+```
 
 
 
@@ -249,6 +300,27 @@ group_by(contributor_name) %>%
 summarize(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
 
+#show me the how many times a state donated
+pa_dem_contribs %>%
+group_by(contributor_state) %>%
+summarize(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+
+
+each_state %>% 
+summarise(total = sum(count_contribs))
+
+
+
+#Looking at orgs the GOP spent their money at.
+new_gop_expenses %>% 
+filter(entity_type_desc == "ORGANIZATION") %>% 
+group_by(recipient_name) %>% 
+summarize(total = sum(disbursement_amount)) %>% 
+arrange(desc(total))
+  
+```
+```{r}
 
 
 ```

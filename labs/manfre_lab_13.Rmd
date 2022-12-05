@@ -150,6 +150,8 @@ Finally, join the two dataframes together:
 joined_results <- joined_results %>%
 mutate(diff = even_mcmullen-wilson)
 
+joined_results
+
 ```
 
 **Q2** Calculate the difference in votes between Mike Lee and Mitt Romney and save it your combined dataframe. Write up some sentences that could go in a story describing where Romney outperformed Lee and where he didn't. Mention the margins and describe the counties you mention (location, population or another factor).
@@ -159,7 +161,9 @@ mutate(diff = even_mcmullen-wilson)
 ```{r}
 
 joined_results <- joined_results %>%
-mutate(rom_lee_diff = romney-mike_lee)
+mutate(rom_lee_diff = mike_lee-romney)
+
+joined_results
 
 ```
 

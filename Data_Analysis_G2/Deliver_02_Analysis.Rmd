@@ -10,7 +10,7 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
 ```{r}
-plot(cars)
+
 
 
 setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data Journalism/Github Repository/Data_Journalism_2022_Fall/Data_Analysis_G2/")
@@ -19,6 +19,7 @@ setwd("/Volumes/Elements/D-Drive/University of Maryland/Classes/Fall 2022/Data J
 library(tidyverse)
 library(lubridate)
 library(janitor)
+library(sf)
 
 ### loading data for Q1
 ## Elrich contribs Data 2022
@@ -190,13 +191,10 @@ clean_names()
 
 
 
-
-
-
 ```
 
 ```{r}
-### Data for Our Q5
+### Data for Our Q5 and cleaning it
 
 # Elrich expenses
 elrich_expenses_2022 <- read_csv("data/elrich_expenses_2022.csv")
@@ -219,7 +217,115 @@ select(-x14)
 
 ```
 
+```{r} * **Quesion 3*: David Blair got more early/election day votes in 2022. Elrich got more Mail-in votes in 2022. How did that compare to 2018? People want to know how Marc Elrich won both times, first by 72 voters in 2018 and then 32 in 2022. Where did Marc do well in the three categories: Early voting, election day, and mail-in votes. Did this sway the result at all?
+React
 ```{r}
+#data for 2018
+blair <- dem_results_18 %>% 
+filter(candidate_name == "David Blair")
+
+elrich <-  dem_results_18 %>% 
+  filter(candidate_name == "Marc Elrich")
+
+blair_elrich_18 <-  bind_rows(blair, elrich)
+
+#data for 2022
+
+dem_results_22 %>% 
+filter(candidate_name == "")
+
+
+
+```
+
+
+3:35
+### Question 4
+* **Question**: Which parts of the county voted for Elrich and which voted for Blair based on precinct-level voting? Are there differences in demographics of those areas? What about income?
+React
+Reply
+
+
+```{r}
+
+dem_precincts_22 %>% 
+filter(candidate_name == "David T. Blair")
+
+moco_boundaries <- st_read("data/moco_boundary.gdb")
+glimpse(moco_boundaries)
+
+
+
+
+
+```
+
+**Question 5**
+
+analysis: There are signifant differences in spending between Elrich and Blair here and it shows how the capital on hand can really influence the means a candidate has to win or lose a race. Elrich in 2022 went all-in on TV spending. Blair spent a lot more in 2018 as well. Blair spent just over 900k on online ads in 2018 and just 1,773 in 2022 — a massive decline. 
+
+```{r}
+
+blair_expenses_2022 %>% 
+group_by(expense_category) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+#spent nearly $3.1 mil in 2022 ... top 3 are Media, Salarties and Direct Mail by Mail House (R)
+
+#dive into media
+blair_expenses_2022 %>% 
+filter(expense_category == "Media") %>% 
+group_by(expense_purpose) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+# Spent 1773.00	 on online advertising in 2022
+
+elrich_expenses_2022 %>% 
+group_by(expense_category) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+# Elrich spent $528393.29 on media which is significantly less than Blair
+
+elrich_expenses_2022 %>% 
+filter(expense_category == "Media") %>% 
+group_by(expense_purpose) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+#Elrich spent 32K on consulting fees. 
+
+
+# 2018 data
+
+blair_expenses_2018%>% 
+group_by(expense_category) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+# Spent 2.9 m on media
+
+#dive into media
+blair_expenses_2022 %>% 
+filter(expense_category == "Media") %>% 
+group_by(expense_purpose) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+#Blair spent 901k on online ads in 2018 and only 1773 in 2022. a massive decline.
+
+elrich_expenses_2018 %>% 
+group_by(expense_category) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+
+elrich_expenses_2018 %>% 
+filter(expense_category == "Media") %>% 
+group_by(expense_purpose) %>% 
+summarize(total_category = sum(amount)) %>% 
+arrange(desc(total_category))
+#Elrich spent 54.5k on Online Ads. 
+
+
+
+
+```
 
 
 
