@@ -320,8 +320,9 @@ summarize(total = sum(disbursement_amount)) %>%
 arrange(desc(total))
   
 ```
-```{r}
 
+```{r}
+each_state
 
 ```
 
