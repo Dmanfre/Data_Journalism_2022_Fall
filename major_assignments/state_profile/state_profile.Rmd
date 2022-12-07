@@ -75,7 +75,9 @@ mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L))
 
  new_dem_expenses
 
-
+#cleaning up the date column.
+new_dem_expenses <-  new_dem_expenses %>%
+mutate(disbursement_date = as.Date(disbursement_date))
 
 
 ```
@@ -152,7 +154,7 @@ summarize(state_total = sum(contribution_receipt_amount)) %>%
 mutate(perc_total = state_total/14897061*100) %>% 
 arrange(desc(perc_total))
 ```
-From here, we can use the same code to break this down by entity type to look at the specific individuals and analyze if they are prominent at all. 
+From here, we can use the same code to break this down by entity type to look at the specific individuals and analyze if they are prominent at all. In Pennsylvania, there is a limit on how much an individual can donate to a state's political committee.  The  GOP had 14 people give the maximim of $20,000 for the two year period of data that we have. The Democrats had seven people give $20,0000. I also noticed that the out-of-state contributions generated 606,577.2 and from the GOP and 1,608,492 from the Democrats.
 
 **Say here if any of the people were prominant**
 ```{r}
@@ -165,51 +167,58 @@ arrange(desc(total))
 
 pa_dem_contribs %>% 
 filter(entity_type == "IND") %>% 
-group_by(contributor_name, contributor_state) %>% 
+group_by(contributor_name, contributor_state, contributor_city) %>% 
 summarise(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
 #Notes 7 people gave the max of 20k in the period for the dem campaign.
 
-each_state_dem <- 
+#each_state_dem <- 
 pa_dem_contribs %>% 
 filter(contributor_state != "PA") %>%
+filter(entity_type == "IND") %>% 
 group_by(contributor_state) %>% 
 summarise(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
-# PA received $12,145,267 in out-of-state contributions
-# DC gave the most with $9,392,229.88 followed by NY and CA.
 
-#each_state_gop<- 
+each_state_dem %>% 
+summarize(new_total = sum(total))
+
+#out of state GOPs from individuals
+each_state_gop<- 
 pa_gop_contribs %>% 
 filter(contributor_state != "PA") %>%
+filter(entity_type == "IND") %>% 
 group_by(contributor_state) %>% 
 summarise(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
+
+each_state_gop %>% 
+summarize(new_total = sum(total))
 
 ```
 
 
-
-
-Here I will write an analysis of what these code blocks show and compare the top individual Republican and Democratic donors
+The organizations are also impactful to this analysis 
 
 
 **Put your analysis of the ORG findings here**
 
 ```{r}
 # showing the orgs doners for DEMOCRATS
-pa_dem_orgs <- pa_dem_contribs %>% 
+pa_dem_orgs <- 
+pa_dem_contribs %>% 
 filter(entity_type == "ORG") %>% 
-group_by(contributor_name) %>% 
+group_by(contributor_name, contributor_state, contributor_zip) %>% 
 summarize(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
 
 pa_dem_orgs
 
-# showing the top doners for GOP
-pa_gop_orgs <- pa_gop_contribs %>% 
+# showing the top org doners for GOP
+pa_gop_orgs <- 
+pa_gop_contribs %>% 
 filter(entity_type == "ORG") %>% 
-group_by(contributor_name) %>% 
+group_by(contributor_name, contributor_state, contributor_zip) %>% 
 summarize(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
 
@@ -217,8 +226,7 @@ pa_gop_orgs
 
 ```
 
-
-Something I've found interesting is that refunds are issued. As someone who was never really knowledgeable about campaign finance, the fact that you can eb issued a refund of your donation was thought-provoking. Both parties refunded a combined $14,212.96 to individual contributors.
+Something I've found interesting is that refunds are issued. As someone who was never really knowledgeable about campaign finance, the fact that you can be issued a refund of your donation was thought-provoking. Both parties refunded a combined $14,212.96 to individual contributors.
 ```{r}
 #looking for refunds
 
@@ -234,28 +242,75 @@ summarize(total = sum(disbursement_amount)) %>%
 arrange(desc(total))
 #285.33 given back to individauls for GOP.
 
-
-gop_dem_total_refund <- 13927.63+285.33
+gop_dem_total_refund <- 
+  13927.63+285.33
+#outputs a total of 14,212.96 
 ```
+
+**Start section on analyzing the expenses*
+
+Something important to any political campaign is advertising and I remembered when we did the unit to see if any Maryland candidates spent money on Facebook ads so I figured I'd look into that here. While it is the entire committee's spending, the Democrats spent over $128,000 on Facebook Web Ads and Facebook came up 147 times. Forty-six of those transactions came on Sept. 25, 2021. I was then curious to see what happened on that day. 
+
+```{r}
+#Viewing the chart
+knitr::include_graphics("data/facebook_spending.png")
+```
+
+
 ```{r}
 
+#web_ad_spending <-
 new_dem_expenses %>% 
-filter(entity_type_desc == "ORGANIZATION") %>% 
-group_by(disbursement_description) %>% 
+filter(disbursement_description == "WEB ADS") %>% 
+group_by(recipient_name) %>% 
 summarize(total_category = sum(disbursement_amount)) %>% 
 arrange(desc(total_category))
 
+#Which date had the most quantity of facebook spending and had the most spending.
+new_dem_expenses %>% 
+filter(recipient_name == "FACEBOOK") %>% 
+group_by(disbursement_date) %>% 
+count() %>% 
+arrange(desc(n))
 
+#dem_facebook_spending <- 
+new_dem_expenses %>% 
+#filter(recipient_name == "FACEBOOK") %>% 
+group_by(disbursement_date) %>% 
+summarize(total = sum(disbursement_amount)) %>% 
+arrange(desc(total))
+#9/25 had 47 transactions totaling nearly $41,000
+
+#Writing dem_facebook_spending to CSV.
+write_csv(dem_facebook_spending, file = "dem_facebook_spending.csv")
+
+
+new_dem_expenses %>% 
+filter(disbursement_date == "2021-09-25")
 
 ```
 
+GPS Impact was the recipient of the second most web ad spending by Democrats and according to its website, it helps Democrats win in traditionally red states.
+
+Another super random nugget was that Cameo made an appearance on the list. Did not expect that by the politicians.
 
 
 
 
 
 
-**Use this section for codes to work with before you put them in the story section **
+
+
+
+
+
+
+
+
+
+
+
+**Use this section for codes to work with before you put them in the story section will delete once I'm done with the final**
 ```{r}
 # showing the top donors, where they're from and how much they gave in total. 
 pa_dem_contribs %>%
