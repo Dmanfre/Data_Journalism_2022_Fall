@@ -20,6 +20,7 @@ library(tidyverse)
 library(lubridate)
 library(janitor)
 library(sf)
+library(ggplot2)
 
 ### loading data for Q1
 ## Elrich contribs Data 2022
@@ -80,7 +81,8 @@ clean_names() %>%
 mutate(expenditure_date = mdy(expenditure_date)) %>% 
 select(-x14)
 
-
+dem_results_22 <- dem_results_22 %>% 
+clean_names
 
 
 
@@ -127,6 +129,7 @@ arrange(desc(total_elrich))
   head(5)
 
 ```
+
 ```{r}
 top_blair_contribs_18 <- blair_contribs_2018 %>%
   mutate(contributor_name = case_when(
@@ -141,6 +144,7 @@ top_blair_contribs_18 <- blair_contribs_2018 %>%
 ### David Blair has family who donated to him in 2022 and 2018 and they are all his top 5 donors.
 
 ```
+
 ```{r}
 top_elrich_contribs_22 <- elrich_contribs_2022 %>%
   group_by(contributor_name) %>%
@@ -170,9 +174,9 @@ clean_names()
 
 
 # dem precints 22
-dem_precincts_22 <- read_csv("data/dem_precincts_22.csv")
+new_dem_precincts_22 <- read_csv("data/new_dem_precincts_22.csv")
 # this has 18298 rows and 15 columns
-dem_precincts_22 <- dem_precincts_22 %>% 
+new_dem_precincts_22 <- new_dem_precincts_22 %>% 
 clean_names()
 
 #dem results 18
@@ -188,7 +192,7 @@ dem_results_22 <- dem_results_22 %>%
 clean_names()
 
 
-
+dem_results_22 <- read_csv("data/GP22_16PrecinctsDemocratic.csv")
 
 
 ```
@@ -218,7 +222,10 @@ select(-x14)
 ```
 
 ```{r} * **Quesion 3*: David Blair got more early/election day votes in 2022. Elrich got more Mail-in votes in 2022. How did that compare to 2018? People want to know how Marc Elrich won both times, first by 72 voters in 2018 and then 32 in 2022. Where did Marc do well in the three categories: Early voting, election day, and mail-in votes. Did this sway the result at all?
-React
+
+**Answer** He did not get more election day votes in 2018. 
+
+
 ```{r}
 #data for 2018
 blair <- dem_results_18 %>% 
@@ -229,10 +236,14 @@ elrich <-  dem_results_18 %>%
 
 blair_elrich_18 <-  bind_rows(blair, elrich)
 
+blair_elrich_18
+
 #data for 2022
 
-dem_results_22 %>% 
-filter(candidate_name == "")
+blair_elrich_22 <- dem_results_22 %>%
+filter(candidate_name == "David T. Blair" | candidate_name == "Marc Elrich") %>% 
+group_by(candidate_name) %>% 
+summarize(total_votes = sum(early_votes+election_night_votes+mail_in_ballot_1_votes+provisional_votes+mail_in_ballot_2_votes))
 
 
 
@@ -242,18 +253,51 @@ filter(candidate_name == "")
 3:35
 ### Question 4
 * **Question**: Which parts of the county voted for Elrich and which voted for Blair based on precinct-level voting? Are there differences in demographics of those areas? What about income?
+
 React
+
 Reply
 
 
 ```{r}
 
-dem_precincts_22 %>% 
-filter(candidate_name == "David T. Blair")
+new_dem_precincts_22 %>% 
+select(-)
 
-moco_boundaries <- st_read("data/moco_boundary.gdb")
+
+moco_precincts <- st_read("data/MontMD_2022/MontMD_2022.shp") %>% st_zm(drop=TRUE)
+glimpse(moco_precincts)
+
+moco_boundaries <- st_read("data/moco.gdb")
 glimpse(moco_boundaries)
 
+  ggplot() +
+  geom_sf(data=moco_boundaries) +
+  geom_sf(data=moco_precincts) +
+  geom_sf(data=blair_elrich_22) +
+  theme_minimal()
+  
+new_dem_precincts_22 %>%
+filter(candidate_name == "David T. Blair" | candidate_name == "Marc Elrich")
+
+55497+55462 110959
+
+blair_elrich_22 %>% 
+mutate(perc_total_22 = (/110959)*100)
+
+results_joined22 <-  inner_join(, moco_prec_2022, by = "election_district_precinct")
+
+md_counties_joined
+            
+
+
+moco_prec_2022 <- read_csv("data/moco_prec_2022.csv")
+
+moco_prec_2022 <-  moco_prec_2022 %>% 
+clean_names()
+
+
+```
 
 
 
@@ -328,9 +372,6 @@ arrange(desc(total_category))
 ```
 
 
-
-
-```
 
 
 Summary of what we've done: "Essentially the goal of this was to gather each data set and make it clean so we can use it. The limitations from using the state data are that the address column contains a full address and there is not a column just for states. But we can use a str_detect_ to create this. There are also some columsn with NAs in them but they are just place holders for columns that have shown refunds in the candidates' expenditures columns. 

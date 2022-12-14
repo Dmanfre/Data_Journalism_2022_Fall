@@ -23,30 +23,34 @@ library(lubridate)
 **This section will be where I load in my datasets**
 ```{r}
 # loading in the PA Democratic Contributions
-pa_dem_contribs <- read_csv("data/pa_dem_contribs_21_22.csv")
+pa_dem_contribs <- read_csv("data/updated_pa_dem_contribs.csv")
 head(pa_dem_contribs)
 
 #laoding in GOP contribs
-pa_gop_contribs <- read_csv("data/pa_gop_contribs_21_22.csv")
+pa_gop_contribs <- read_csv("data/updated_pa_gop_contribs.csv")
 head(pa_gop_contribs)
 
 #loading in Democratic Expenses
-pa_dem_expenses <- read_csv("data/pa_dem_expenses_21_22.csv")
+pa_dem_expenses <- read_csv("data/updated_pa_dem_expenses.csv")
 head(pa_dem_expenses)
 
 #loading in GOP expenses
-pa_gop_expenses <- read_csv("data/pa_gop_expenses_21_22.csv")
+pa_gop_expenses <- read_csv("data/updated_pa_gop_expenses.csv")
 head(pa_gop_expenses)
+```
+
+
+
+```{r}
+#done after open refine
 
 #loading in GOP expenses
-new_gop_expenses <- read_csv("data/new_gop_expenses.csv")
+new_gop_expenses <- read_csv("data/updated_pa_gop_expenses.csv")
 head(new_gop_expenses)
 
 #loading in new_dem_expenses
-new_dem_expenses <- read_csv("data/new_dem_expenses.csv")
+new_dem_expenses <- read_csv("data/updated_pa_dem_expenses.csv")
 head(new_dem_expenses)
-
-
 ```
 
 **This section will be where I clean each dataset.**
@@ -98,45 +102,53 @@ mutate(contributor_zip = str_sub(contributor_zip, start=1L, end=5L))
 ```{r}
 #cleaning pa_gop_expenses
 
-new_gop_expenses
-#not much cleaning to do here
+new_gop_expenses <- new_gop_expenses %>% 
+mutate(disbursement_date = as.Date(disbursement_date))
+
 
 ```
 
 
-***Story time***
+ ***Story time***
 In order to do a complete analysis of the Pennsylvania Republican and Democratic Parties, we need to understand and learn who the major players are. Basically, we need to answer the five W’s for each party: who, what, where, when and why. This is the basic level of analysis for the two parties but we truly can go through a rabbit hole in each file.
 
-I’ll structure it like this: I’ll write a question, then below put the code block for the answer and then write the answer out with a piece of analysis under it. Let’s start with the Democratic contributions from Pennsylvania. Money in and money out are the two most important things in a financial report. Pennsylvania as of the analysis done Nov. 27, received $14,897,061. 
+I’ll structure it like this: I’ll write a question, then below put the code block for the answer and then write the answer out with a piece of analysis under it. Let’s start with the Democratic contributions from Pennsylvania. Money in and money out are the two most important things in a financial report. Pennsylvania as of the analysis done Nov. 27, received $14,897,061. As of Dec. 12, that number jumped to $17,665,854.
 
 ```{r}
-# How much did Pennsylvania raise in total.. number as of Nov. 27
+# How much did Pennsylvania raise in total.. number as of Oct. 19
 
 total_pa_dem_contribs <- pa_dem_contribs %>% 
 summarize(total_pa_dem_contribs = sum(contribution_receipt_amount))
 
-# the result of this code is a 1x1 tibble with the total 14897061
+# the result of this code is a 1x1 tibble with the total 17,665,854 for Dems
+
+total_pa_gop_contribs <- pa_gop_contribs %>% 
+summarize(total_pa_gop_contribs = sum(contribution_receipt_amount))
+# the result of this code is a 1x1 tibble with the total 7,620,215 for GOP
+
 ```
 
-It appears that Pennsylvania’s democratic party only got 15% of its overall donations from individuals which tells me that the average Joe in the state, is not pouring money into the committee. What surprised me about this was that individuals in the state gave $1,660,668 more than large political action committees did. 
+It appears that Pennsylvania’s democratic party  got 21% of its overall donations from individuals which tells me that the average Joe in the state, is not pouring money into the committee. This is actually up from 15% when I first loaded data into this markdown. What surprised me about this was that individuals in the state gave $204,629.20 more than large political action committees did. 
+
+The GOP's percentages are a bit ore stark in my opinion. Roughly 8% of its donations come from PACs. I figured that it would be at least a million.
 
 ```{r}
 #showing how much each entity donated and breaking it down by percentage for dems
-dem_entity_perc <- pa_dem_contribs %>%
+#dem_entity_perc <- 
+pa_dem_contribs %>%
 group_by(entity_type, entity_type_desc) %>% 
 summarize(total = sum(contribution_receipt_amount)) %>% 
-mutate(perc_total = total/14897061*100) %>% 
+mutate(perc_total = total/17665854*100) %>% 
 arrange(desc(perc_total))
 
 # showing difference between IND and PAC for Dems
-ind_pac_dem_difference <- 2314694.2-654025.6
-dem_entity_perc
+ind_pac_dem_difference <- 3173876.1-877326.7
 
 #showing how much each entity donated and breaking it down by percentage for GOP
 gop_entity_perc <- pa_gop_contribs %>%
 group_by(entity_type, entity_type_desc) %>% 
 summarize(total = sum(contribution_receipt_amount)) %>% 
-mutate(perc_total = total/14897061*100) %>% 
+mutate(perc_total = total/7620215*100) %>% 
 arrange(desc(perc_total))
 
 gop_entity_perc
@@ -146,34 +158,52 @@ gop_entity_perc
 Comparing the Dems to the GOP is interesting here as it shows that PACs still lags behind Individual contributors to the GOP which is noteworthy because I figured it would give more to the GOP. There is, however, a massive drop-off in the other committee category. It only makes up 2% of donations to the GOP where as the Democrats got 50% of its fundraising from that category alone.
 
 We need to look at the top key players here. Who donated the most to Pennsylvania’s Democratic and Republican Committees and where did they come from? Are they prominent people at all? Did any one person make up a large percentage of the total donations? We’ll do this for the Republicans too.
+
+The Fetterman Campaign donated around 8% of the total contributions and was the highest totaling contributor among the candidates in PA. "CHRIS DELUZIO VICTORY FUND" was the second highest contributor associated to a candidate.
+**Maybe make a map of his voter data single **
+
 ```{r}
-# Where did the GOP contribs come from.
+# What committees did the GOP contribs come from
 pa_gop_contribs %>% 
+filter(entity_type == "COM") %>% 
 group_by(contributor_name, contributor_employer) %>% 
 summarize(state_total = sum(contribution_receipt_amount)) %>% 
-mutate(perc_total = state_total/14897061*100) %>% 
+mutate(perc_total = state_total/5965924*100) %>% 
 arrange(desc(perc_total))
+
+pa_dem_contribs %>% 
+filter(entity_type == "COM") %>% 
+group_by(contributor_name, contributor_employer) %>% 
+summarize(state_total = sum(contribution_receipt_amount)) %>% 
+mutate(perc_total = state_total/17665854*100) %>% 
+arrange(desc(perc_total))
+
+
 ```
-From here, we can use the same code to break this down by entity type to look at the specific individuals and analyze if they are prominent at all. In Pennsylvania, there is a limit on how much an individual can donate to a state's political committee.  The  GOP had 14 people give the maximim of $20,000 for the two year period of data that we have. The Democrats had seven people give $20,0000. I also noticed that the out-of-state contributions generated 606,577.2 and from the GOP and 1,608,492 from the Democrats.
+
+From here, we can use the same code to break this down by entity type to look at the specific individuals and analyze if they are prominent at all. In Pennsylvania, there is a limit on how much an individual can donate to a state's political committee.  The  GOP had 15 people give the max of $20,000 for the two year period of data that we have. The Democrats had seven people give $20,0000. I also noticed that the out-of-state contributions generated $692,355.90 and from the GOP and $2,172,204 from the Democrats.
+
+A lot of the top GOP donors are high-ranking individuals within their own sectors. We see a handful of chairman and Presidents of various companies. Those individuals are the ones who gave the max $20,000. The majority of the GOP donors are retired people. 
 
 **Say here if any of the people were prominant**
 ```{r}
+pa_gop_contribs
+
 pa_gop_contribs %>% 
 filter(entity_type == "IND") %>% 
-group_by(contributor_name) %>% 
+group_by(contributor_name, contributor_occupation) %>% 
 summarise(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
-#Notes: 14 people gave the maximum of $20k in the period for the GOP
+#Notes: 15 people gave the maximum of $20k in the period for the GOP
 
 pa_dem_contribs %>% 
 filter(entity_type == "IND") %>% 
-group_by(contributor_name, contributor_state, contributor_city) %>% 
+group_by(contributor_name, contributor_occupationcontributor_state, contributor_city, ) %>% 
 summarise(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
 #Notes 7 people gave the max of 20k in the period for the dem campaign.
 
-#each_state_dem <- 
-pa_dem_contribs %>% 
+each_state_dem <- pa_dem_contribs %>% 
 filter(contributor_state != "PA") %>%
 filter(entity_type == "IND") %>% 
 group_by(contributor_state) %>% 
@@ -194,12 +224,28 @@ arrange(desc(total))
 
 each_state_gop %>% 
 summarize(new_total = sum(total))
+```
+
+
+```{r}
+# writing to CSV
+
+write_csv(each_state_gop, file = "each_state_gop.csv")
+
+write_csv(each_state_dem, file = "each_state_dem.csv")
+
+#joining each states dem and GOP
+joined_out_of_state <- each_state_dem %>%
+  left_join(each_state_gop, by = "contributor_state")
+
+joined_out_of_state <- joined_out_of_state %>% 
+rename(dem = "total.x") %>% 
+rename(gop = "total.y")
 
 ```
 
 
-The organizations are also impactful to this analysis 
-
+The organizations are also impact to this analysis 
 
 **Put your analysis of the ORG findings here**
 
@@ -225,7 +271,6 @@ arrange(desc(total))
 pa_gop_orgs
 
 ```
-
 Something I've found interesting is that refunds are issued. As someone who was never really knowledgeable about campaign finance, the fact that you can be issued a refund of your donation was thought-provoking. Both parties refunded a combined $14,212.96 to individual contributors.
 ```{r}
 #looking for refunds
@@ -249,7 +294,9 @@ gop_dem_total_refund <-
 
 **Start section on analyzing the expenses*
 
-Something important to any political campaign is advertising and I remembered when we did the unit to see if any Maryland candidates spent money on Facebook ads so I figured I'd look into that here. While it is the entire committee's spending, the Democrats spent over $128,000 on Facebook Web Ads and Facebook came up 147 times. Forty-six of those transactions came on Sept. 25, 2021. I was then curious to see what happened on that day. 
+Something important to any political campaign is advertising and I remembered when we did the unit to see if any Maryland candidates spent money on Facebook ads so I figured I'd look into that here. While it is the entire committee's spending, the Democrats spent over $128,000 on Facebook Web Ads. Forty-six of those transactions came on Sept. 25, 2021. I was then curious to see what happened on that day. After we loaded in the new data which went up to Oct. 19, there were no new transactions to Facebook. When I looked at the Meta Ad library and saw the Democratic ads, I did not see anything too jarring in terms of what was actually said in the ads.
+
+They didn't necessarily attack or cast aspersions any one candidate in particular like we've seen with some GOP ads.
 
 ```{r}
 #Viewing the chart
@@ -259,12 +306,21 @@ knitr::include_graphics("data/facebook_spending.png")
 
 ```{r}
 
-#web_ad_spending <-
+#web_ad_spending_dems <-
 new_dem_expenses %>% 
 filter(disbursement_description == "WEB ADS") %>% 
 group_by(recipient_name) %>% 
 summarize(total_category = sum(disbursement_amount)) %>% 
 arrange(desc(total_category))
+#shows 128k spent on Facebook 
+
+#web_ad_spending_gop <-
+new_gop_expenses %>% 
+filter(disbursement_description == "WEB ADS") %>% 
+group_by(recipient_name) %>% 
+summarize(total_category = sum(disbursement_amount)) %>% 
+arrange(desc(total_category))
+#shows 120k spent on Facebook 
 
 #Which date had the most quantity of facebook spending and had the most spending.
 new_dem_expenses %>% 
@@ -273,9 +329,9 @@ group_by(disbursement_date) %>%
 count() %>% 
 arrange(desc(n))
 
-#dem_facebook_spending <- 
+dem_facebook_spending <- 
 new_dem_expenses %>% 
-#filter(recipient_name == "FACEBOOK") %>% 
+filter(recipient_name == "FACEBOOK") %>% 
 group_by(disbursement_date) %>% 
 summarize(total = sum(disbursement_amount)) %>% 
 arrange(desc(total))
@@ -290,19 +346,21 @@ filter(disbursement_date == "2021-09-25")
 
 ```
 
-GPS Impact was the recipient of the second most web ad spending by Democrats and according to its website, it helps Democrats win in traditionally red states.
+GPS Impact was the recipient of the second most web ad spending by Democrats and according to its website, it helps Democrats win in traditionally red states. They target all types of audiences in hopes to increase the Democratic message.
 
-Another super random nugget was that Cameo made an appearance on the list. Did not expect that by the politicians.
+Another super random nugget was that Cameo made an appearance on the list. I did not expect that by the politicians and now I'm curious which politicians from the PA Democratic Party appeared on the platform. A total of 1677.38 was spent on Cameo by the Democrats on two dates, 12/08/21 and 10/04/21.
 
+There is potential for a story here. I"m very curious to see who made the Cameo appearance. After looking at PADems on Instagram, I saw that Julia Louis Dreyfus was in a post that had the language of a Cameo so it was unclear if this is what the Cameo dollers went to. 
 
+```{r}
+pa_dem_expenses %>% 
+filter(recipient_name == "CAMEO") %>% 
+group_by(disbursement_date) %>% 
+summarize(total = sum(disbursement_amount))
 
+1204.88+472.50
 
-
-
-
-
-
-
+```
 
 
 
@@ -329,7 +387,7 @@ arrange(desc(perc_total))
 ### The percentages from individuals is quite small here with PA's totals making up just 15%. This tells me that the Dem committee as a whole is not getting much money from individual donations and is likely getting more from others.
 
 #Which entity gave the most?
-dem_entity_perc <- pa_dem_contribs %>%
+dem_entity_perc <-pa_dem_contribs %>%
 group_by(entity_type) %>% 
 summarize(total = sum(contribution_receipt_amount)) %>% 
 mutate(perc_total = total/14897061*100) %>% 
@@ -362,8 +420,7 @@ summarize(total = sum(contribution_receipt_amount)) %>%
 arrange(desc(total))
 
 
-each_state %>% 
-summarise(total = sum(count_contribs))
+
 
 
 
@@ -374,6 +431,8 @@ group_by(recipient_name) %>%
 summarize(total = sum(disbursement_amount)) %>% 
 arrange(desc(total))
   
+
+
 ```
 
 ```{r}
@@ -381,10 +440,55 @@ each_state
 
 ```
 
+practice codes with new data
+```{r}
+
+pa_dem_contribs %>% 
+filter(entity_type == "ORG") %>% 
+group_by(contributor_name) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+
+pa_dem_contribs %>% 
+filter(entity_type == "ORG") %>% 
+group_by(contributor_name) %>% 
+summarize(total = sum(contribution_receipt_amount)) %>% 
+arrange(desc(total))
+
+
+
+new_gop_expenses %>% 
+group_by(disbursement_description) %>% 
+count() %>% 
+arrange(desc(n))
+```
 
 
 
 
+```{r}
+
+# removing the data frames in enviornment
+
+rm(list = c("blair", "blair_22", "blair_contribs_2018", "blair_contribs_2022", "blair_elrich", "blair_elrich_18", "blair_elrich_22", "blair_expenses_2018", "blair_expenses_2022", "counties", "elrich", "elrich_22", "elrich_contribs", "elrich_contribs_2022", "elrich_contribs_2018", "elrich_expenses_2018", "elrich_expenses_2022", "md_actblue_zip", "md_counties", "md_counties_joined", "md_county_population", "md_gov_county", "md_voters_per_10k", "moco_boundaries", "moco_precincts", "primary_22", "pg_turnout", "top_blair_2022_contribs", "top_blair_contribs_18", "top_elrich_contribs_18", "top_elrich_contribs_22", "voters_by_county" ))
+
+rm(list = c("moco_prec_2022"))
+
+rm(list = c("each_state"))
+
+
+```
+
+
+Look where the contributions come from... states and zip codes. 
+
+Get a list of PA congressional reps (house) and say who gave and who didnt.
+Doing geographical data allows us to bring in Census data and describes where the donors come from. 
+
+
+maybe make the graph a line chart.
+
+With the census stuff, 
 
 
 
