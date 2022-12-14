@@ -368,6 +368,7 @@ Another super random nugget was that Cameo made an appearance on the list. I did
 There is potential for a story here. I"m very curious to see who made the Cameo appearance. After looking at PADems on Instagram, I saw that Julia Louis Dreyfus was in a post that had the language of a Cameo so it was unclear if this is what the Cameo dollers went to. 
 
 ```{r}
+#Filtering to see when transctions to Cameo were made.
 pa_dem_expenses %>% 
 filter(recipient_name == "CAMEO") %>% 
 group_by(disbursement_date) %>% 
@@ -376,6 +377,7 @@ summarize(total = sum(disbursement_amount))
 1204.88+472.50
 
 ```
+
 
 
 
@@ -450,10 +452,6 @@ arrange(desc(total))
 
 ```
 
-```{r}
-each_state
-
-```
 
 
 
@@ -502,14 +500,6 @@ rm(list = c("each_state"))
 ```
 
 
-Look where the contributions come from... states and zip codes. 
-
-Get a list of PA congressional reps (house) and say who gave and who didnt.
-Doing geographical data allows us to bring in Census data and describes where the donors come from. 
-
-maybe make the graph a line chart.
-
-With the census stuff, 
 
 
 
