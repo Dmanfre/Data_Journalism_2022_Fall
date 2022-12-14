@@ -297,12 +297,40 @@ moco_prec_2022 <-  moco_prec_2022 %>%
 clean_names()
 
 
-```
 
 
 
 
 ```
+
+```{r}
+
+
+new_dem_precincts_22 <- read_csv("data/new_dem_precincts_22.csv")
+# this has 18298 rows and 15 columns
+new_dem_precincts_22 <- new_dem_precincts_22 %>% 
+clean_names()
+
+totals <- new_dem_precincts_22 %>% 
+filter(office_name == "County Executive") %>%
+group_by(election_district_precinct, county_name) %>% 
+summarize(total_votes = sum(early_votes+election_night_votes+mail_in_ballot_1_votes+provisional_votes+mail_in_ballot_2_votes))
+
+new_dem_precincts_22 %>% 
+filter(candidate_name == "David T. Blair" & candidate_name == "	
+Marc Elrich")
+  
+write_csv(new_dem_precincts_22, file = "new_dem_precincts_22")
+
+joined_precinct <- blair_elrich_22 %>%
+  left_join(totals, by = "election_district_precinct")
+
+joined_precinct %>% 
+filter(office_name == "County Executive") %>% 
+group_by(candidate_name)
+
+```
+
 
 **Question 5**
 
@@ -371,6 +399,10 @@ arrange(desc(total_category))
 
 ```
 
+```{r}
+dem_
+
+```
 
 
 

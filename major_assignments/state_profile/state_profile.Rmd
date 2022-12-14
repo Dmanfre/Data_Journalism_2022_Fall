@@ -120,11 +120,14 @@ I’ll structure it like this: I’ll write a question, then below put the code 
 total_pa_dem_contribs <- pa_dem_contribs %>% 
 summarize(total_pa_dem_contribs = sum(contribution_receipt_amount))
 
+total_pa_dem_contribs
 # the result of this code is a 1x1 tibble with the total 17,665,854 for Dems
 
 total_pa_gop_contribs <- pa_gop_contribs %>% 
 summarize(total_pa_gop_contribs = sum(contribution_receipt_amount))
 # the result of this code is a 1x1 tibble with the total 7,620,215 for GOP
+
+total_pa_gop_contribs
 
 ```
 
@@ -134,12 +137,14 @@ The GOP's percentages are a bit ore stark in my opinion. Roughly 8% of its donat
 
 ```{r}
 #showing how much each entity donated and breaking it down by percentage for dems
-#dem_entity_perc <- 
+dem_entity_perc <- 
 pa_dem_contribs %>%
 group_by(entity_type, entity_type_desc) %>% 
 summarize(total = sum(contribution_receipt_amount)) %>% 
 mutate(perc_total = total/17665854*100) %>% 
 arrange(desc(perc_total))
+
+dem_entity_perc
 
 # showing difference between IND and PAC for Dems
 ind_pac_dem_difference <- 3173876.1-877326.7
@@ -160,7 +165,6 @@ Comparing the Dems to the GOP is interesting here as it shows that PACs still la
 We need to look at the top key players here. Who donated the most to Pennsylvania’s Democratic and Republican Committees and where did they come from? Are they prominent people at all? Did any one person make up a large percentage of the total donations? We’ll do this for the Republicans too.
 
 The Fetterman Campaign donated around 8% of the total contributions and was the highest totaling contributor among the candidates in PA. "CHRIS DELUZIO VICTORY FUND" was the second highest contributor associated to a candidate.
-**Maybe make a map of his voter data single **
 
 ```{r}
 # What committees did the GOP contribs come from
@@ -185,7 +189,6 @@ From here, we can use the same code to break this down by entity type to look at
 
 A lot of the top GOP donors are high-ranking individuals within their own sectors. We see a handful of chairman and Presidents of various companies. Those individuals are the ones who gave the max $20,000. The majority of the GOP donors are retired people. 
 
-**Say here if any of the people were prominant**
 ```{r}
 pa_gop_contribs
 
@@ -198,7 +201,7 @@ arrange(desc(total))
 
 pa_dem_contribs %>% 
 filter(entity_type == "IND") %>% 
-group_by(contributor_name, contributor_occupationcontributor_state, contributor_city, ) %>% 
+group_by(contributor_name, contributor_occupation, contributor_state, contributor_city, ) %>% 
 summarise(total = sum(contribution_receipt_amount)) %>% 
 arrange(desc(total))
 #Notes 7 people gave the max of 20k in the period for the dem campaign.
@@ -227,27 +230,36 @@ summarize(new_total = sum(total))
 ```
 
 
+When we are looking at the out of state contributions I thought it was interesting that not every committee receives donations from each state. So here I created a map showing the states that gave the most to Pennsylvania with some missing. Thirty-nine outside states gave to Pennsylvania Dems and 23 states contributed to PA's GOP committee. The out of state contributions are significant because it shows that the parties are able to generate funding outside of its local base.
 ```{r}
-# writing to CSV
-
-write_csv(each_state_gop, file = "each_state_gop.csv")
-
-write_csv(each_state_dem, file = "each_state_dem.csv")
 
 #joining each states dem and GOP
 joined_out_of_state <- each_state_dem %>%
   left_join(each_state_gop, by = "contributor_state")
 
+#renaming
 joined_out_of_state <- joined_out_of_state %>% 
 rename(dem = "total.x") %>% 
 rename(gop = "total.y")
 
+## do the replace NA function with 0s
+joined_out_of_state <- joined_out_of_state %>%
+  mutate(gop = ifelse(is.na(gop), 0, gop))
+
+#generating the state_diff column
+joined_out_of_state <-  joined_out_of_state %>% 
+mutate(state_diff = dem-gop)
+
+# writing to CSV
+write_csv(joined_out_of_state, file = "joined_out_of_state.csv")
+
+#Viewing the chart
+knitr::include_graphics("data/dem_spending_map.png")
+
 ```
 
 
-The organizations are also impact to this analysis 
-
-**Put your analysis of the ORG findings here**
+VLM COOPERATIVE, INC was an interesting company that gave the Dems money because there was so little information on them. When looking at the orgs that contributed to the GOP, I noticed that most of them are located in PA where as orgs from various states gave to the Democratic party.
 
 ```{r}
 # showing the orgs doners for DEMOCRATS
@@ -271,7 +283,10 @@ arrange(desc(total))
 pa_gop_orgs
 
 ```
+
 Something I've found interesting is that refunds are issued. As someone who was never really knowledgeable about campaign finance, the fact that you can be issued a refund of your donation was thought-provoking. Both parties refunded a combined $14,212.96 to individual contributors.
+
+I believe this could possibly be a story only because people usually give to a campaign with the intention that the money will be used for something but in these cases, the money was refunded.
 ```{r}
 #looking for refunds
 
@@ -440,6 +455,10 @@ each_state
 
 ```
 
+
+
+
+
 practice codes with new data
 ```{r}
 
@@ -467,7 +486,6 @@ arrange(desc(n))
 
 
 ```{r}
-
 # removing the data frames in enviornment
 
 rm(list = c("blair", "blair_22", "blair_contribs_2018", "blair_contribs_2022", "blair_elrich", "blair_elrich_18", "blair_elrich_22", "blair_expenses_2018", "blair_expenses_2022", "counties", "elrich", "elrich_22", "elrich_contribs", "elrich_contribs_2022", "elrich_contribs_2018", "elrich_expenses_2018", "elrich_expenses_2022", "md_actblue_zip", "md_counties", "md_counties_joined", "md_county_population", "md_gov_county", "md_voters_per_10k", "moco_boundaries", "moco_precincts", "primary_22", "pg_turnout", "top_blair_2022_contribs", "top_blair_contribs_18", "top_elrich_contribs_18", "top_elrich_contribs_22", "voters_by_county" ))
@@ -475,6 +493,10 @@ rm(list = c("blair", "blair_22", "blair_contribs_2018", "blair_contribs_2022", "
 rm(list = c("moco_prec_2022"))
 
 rm(list = c("each_state"))
+```
+
+
+```{r}
 
 
 ```
@@ -484,7 +506,6 @@ Look where the contributions come from... states and zip codes.
 
 Get a list of PA congressional reps (house) and say who gave and who didnt.
 Doing geographical data allows us to bring in Census data and describes where the donors come from. 
-
 
 maybe make the graph a line chart.
 
